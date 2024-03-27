@@ -1,8 +1,8 @@
 import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
 
-interface Account {
-  uid: string
+export interface Account {
   name: string
+  face: string
   SESSDATA: string
   bili_jct: string
   DedeUserID: string
@@ -10,5 +10,6 @@ interface Account {
 }
 
 export const multipleAccountsStorage = {
+  currentAccount: useWebExtensionStorage<string>('currentAccount', ''),
   accounts: useWebExtensionStorage<Account[]>('accounts', []),
 }

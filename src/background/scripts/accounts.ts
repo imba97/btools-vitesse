@@ -1,3 +1,4 @@
+import BilibiliApi from '~/api/bilibili'
 import { multipleAccountsStorage } from '~/storages/multipleAccounts'
 
 export const getCurrentAccount = async () => {
@@ -20,11 +21,36 @@ export const getCurrentAccount = async () => {
     accountCookie[key] = cookie?.value
   })
 
-  const account = _.find(multipleAccountsStorage.accounts.value, accountCookie)
+  // 设置当前账号 UID
+  multipleAccountsStorage.currentAccount.value = _.get(accountCookie, 'DedeUserID', '')
 
-  // eslint-disable-next-line no-console
-  console.log('account', account)
+  console.log('currentAccount', multipleAccountsStorage.currentAccount.value)
 
-  // if (!account)
-  //   multipleAccountsStore.accounts.value.push(accountCookie)
+  console.log(multipleAccountsStorage.accounts.value)
+
+  // 已登录
+  if (accountCookie.DedeUserID) {
+    const account = _.find(multipleAccountsStorage.accounts.value, {
+      DedeUserID: accountCookie.DedeUserID,
+    })
+
+    if (account) {
+      const userInfo = await BilibiliApi.getUserInfo(accountCookie.DedeUserID)
+
+      multipleAccountsStorage.accounts.value.push({
+        name: _.get(userInfo, 'data.name', ''),
+        face: _.get(userInfo, 'data.face', ''),
+        SESSDATA: accountCookie.SESSDATA!,
+        bili_jct: accountCookie.bili_jct!,
+        DedeUserID: accountCookie.DedeUserID!,
+        DedeUserID__ckMd5: accountCookie.DedeUserID__ckMd5!,
+      })
+    }
+    else {
+      console.log('account', account)
+    }
+  }
+  else {
+    console.log('未登录')
+  }
 }

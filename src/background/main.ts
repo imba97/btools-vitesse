@@ -16,6 +16,7 @@ if (import.meta.hot) {
 browser.runtime.onInstalled.addListener((): void => {
   // eslint-disable-next-line no-console
   console.log('Extension installed')
+  getCurrentAccount()
 })
 
 let previousTabId = 0
@@ -56,5 +57,3 @@ onMessage('get-current-tab', async () => {
     }
   }
 })
-
-getCurrentAccount()

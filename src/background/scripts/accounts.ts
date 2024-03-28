@@ -34,7 +34,7 @@ export const getCurrentAccount = async () => {
       DedeUserID: accountCookie.DedeUserID,
     })
 
-    if (account) {
+    if (!account) {
       const userInfo = await BilibiliApi.getUserInfo(accountCookie.DedeUserID)
 
       multipleAccountsStorage.accounts.value.push({

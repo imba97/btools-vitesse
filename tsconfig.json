@@ -14,7 +14,8 @@
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "types": [
-      "vite/client"
+      "vite/client",
+      "naive-ui/volar"
     ],
     "paths": {
       "~/*": ["src/*"]

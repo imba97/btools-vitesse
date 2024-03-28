@@ -7,6 +7,7 @@ import Vue from '@vitejs/plugin-vue'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import AutoImport from 'unplugin-auto-import/vite'
 import UnoCSS from 'unocss/vite'
 import { isDev, port, r } from './scripts/utils'
@@ -49,6 +50,7 @@ export const sharedConfig: UserConfig = {
         IconsResolver({
           prefix: '',
         }),
+        NaiveUiResolver(),
       ],
     }),
 

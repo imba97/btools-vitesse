@@ -52,6 +52,12 @@ const changeAccount = async (account: Account) => {
     multipleAccountsStorage.currentAccount.value = account.DedeUserID
   })
 }
+
+const removeAccount = (account: Account) => {
+  _.remove(multipleAccountsStorage.accounts.value, {
+    DedeUserID: account.DedeUserID,
+  })
+}
 </script>
 
 <template>
@@ -60,20 +66,24 @@ const changeAccount = async (account: Account) => {
       <div
         v-for="account in accountsList" :key="account.DedeUserID" class="account-item" :class="{
           actived: isCurrentAccount(account),
-        }" flex="~ col" items-center b="~ solid" rounded-5
+        }" flex="~ col" items-center b="~ solid" rounded-5 py-3
       >
         <div>
           <img :src="account.face" h-32 w-32 rounded-5>
         </div>
 
-        <div text="5 primary">
+        <div class="name" text-5>
           {{ account.name }}
         </div>
 
-        <div>
-          <button :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
+        <div mt-3 flex gap-2>
+          <n-button type="success" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
             切换
-          </button>
+          </n-button>
+
+          <n-button type="error" ghost @click="removeAccount(account)">
+            删除
+          </n-button>
         </div>
       </div>
     </div>
@@ -86,6 +96,10 @@ const changeAccount = async (account: Account) => {
 
   &.actived {
     --at-apply: b-primary;
+
+    .name {
+      --at-apply: text-primary;
+    }
   }
 }
 </style>

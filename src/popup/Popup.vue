@@ -16,7 +16,7 @@ const changeAccount = async (account: Account) => {
       domain: '.bilibili.com',
     })
 
-  _.forEach(['SESSDATA', 'bili_jct'], (key) => {
+  _.forEach(['SESSDATA', 'bili_jct', 'DedeUserID', 'DedeUserID__ckMd5'], (key: keyof Account) => {
     let cookie: any = _.find(cookies, { name: key })
 
     if (!cookie) {
@@ -34,14 +34,7 @@ const changeAccount = async (account: Account) => {
       }
     }
 
-    switch (key) {
-      case 'SESSDATA':
-        cookie.value = account.SESSDATA
-        break
-      case 'bili_jct':
-        cookie.value = account.bili_jct
-        break
-    }
+    cookie.value = account[key]
 
     browser.cookies.set({
       url: 'https://bilibili.com',

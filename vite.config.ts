@@ -35,6 +35,10 @@ export const sharedConfig: UserConfig = {
             ['*', 'browser'],
           ],
           'lodash': [['*', '_']],
+          'moment': [['*', 'moment']],
+          'naive-ui': [
+            'useDialog',
+          ],
         },
       ],
       dts: r('src/auto-imports.d.ts'),

@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { multipleAccountsStorage } from '~/storages/multipleAccounts'
+import { configStorage } from '~/storages/config'
+import { withDialogPromise } from '~/utils/dialog'
 
 import type { Account } from '~/storages/multipleAccounts'
 
@@ -12,6 +14,15 @@ const isCurrentAccount = (account: Account) => {
 }
 
 const changeAccount = async (account: Account) => {
+  if (configStorage.accountChangeConfirm.value) {
+    await withDialogPromise(dialog.warning, {
+      title: '切换确认',
+      content: `确认切换到账号 ${account.name}？`,
+      positiveText: '确定',
+      negativeText: '取消',
+    })
+  }
+
   const cookies = await browser.cookies
     .getAll({
       domain: '.bilibili.com',
@@ -54,17 +65,16 @@ const changeAccount = async (account: Account) => {
   })
 }
 
-const removeAccount = (account: Account) => {
-  dialog.warning({
+const removeAccount = async (account: Account) => {
+  await withDialogPromise(dialog.warning, {
     title: '删除确认',
     content: `确认删除 ${account.name}？`,
     positiveText: '确定',
     negativeText: '取消',
-    onPositiveClick: () => {
-      _.remove(multipleAccountsStorage.accounts.value, {
-        DedeUserID: account.DedeUserID,
-      })
-    },
+  })
+
+  _.remove(multipleAccountsStorage.accounts.value, {
+    DedeUserID: account.DedeUserID,
   })
 }
 </script>

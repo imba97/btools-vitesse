@@ -9,7 +9,7 @@ onMounted(() => {
 
 <template>
   <n-dialog-provider>
-    <div w-100 min-h-100 p-5>
+    <div w-100 min-h-60 px-3 pb-3>
       <n-tabs type="line" animated>
         <n-tab-pane name="multiple-accounts" tab="多帐号">
           <MultipleAccounts />

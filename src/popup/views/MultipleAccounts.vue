@@ -70,31 +70,39 @@ const removeAccount = (account: Account) => {
 </script>
 
 <template>
-  <div grid="~ cols-2" items-center gap-3>
+  <n-scrollbar max-h-100>
     <div
-      v-for="account in accountsList" :key="account.DedeUserID" class="account-item" :class="{
-        actived: isCurrentAccount(account),
-      }" flex="~ col" items-center b="~ solid" rounded-5 py-3
+      flex="~ col" gap-3 :class="{
+        'mr-6': accountsList.length >= 5,
+      }"
     >
-      <div>
-        <img :src="account.face" h-32 w-32 rounded-5>
-      </div>
+      <div
+        v-for="account in accountsList" :key="account.DedeUserID" class="account-item" :class="{
+          actived: isCurrentAccount(account),
+        }" flex justify-between items-center b="~ solid" rounded-5 p-3
+      >
+        <div flex items-center gap-3>
+          <div>
+            <img :src="account.face" h-16 w-16 rounded-5>
+          </div>
 
-      <div class="name" text-5>
-        {{ account.name }}
-      </div>
+          <div class="name" text-5>
+            {{ account.name }}
+          </div>
+        </div>
 
-      <div mt-3 flex gap-2>
-        <n-button type="success" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
-          切换
-        </n-button>
+        <div mt-3 flex gap-2>
+          <n-button type="success" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
+            切换
+          </n-button>
 
-        <n-button type="error" ghost @click="removeAccount(account)">
-          删除
-        </n-button>
+          <n-button type="error" ghost @click="removeAccount(account)">
+            删除
+          </n-button>
+        </div>
       </div>
     </div>
-  </div>
+  </n-scrollbar>
 </template>
 
 <style lang="scss" scoped>

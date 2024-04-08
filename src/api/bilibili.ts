@@ -1,5 +1,6 @@
 import md5 from 'md5'
 import { useRequest } from './request'
+import type { ReplyParams } from './data/bilibili.data'
 import { apiStorage } from '~/storages/api'
 
 const request = useRequest('https://api.bilibili.com/x')
@@ -13,6 +14,10 @@ export default class BilibiliApi {
     return request.get('/space/wbi/acc/info', withWbi({
       mid,
     }))
+  }
+
+  static getReply(params: ReplyParams) {
+    return request.get('/v2/reply/wbi/main', withWbi(params))
   }
 }
 

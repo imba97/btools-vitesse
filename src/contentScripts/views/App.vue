@@ -3,5 +3,5 @@ import 'uno.css'
 </script>
 
 <template>
-  <div>test</div>
+  <div absolute />
 </template>

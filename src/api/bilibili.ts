@@ -51,7 +51,7 @@ function withWbi(params: Record<string, any>) {
 
   const wbi_sign = md5(query + mixin_key) // 计算 w_rid
 
-  return _.assign(params, {
+  return _assign(params, {
     w_rid: wbi_sign,
   })
 }

@@ -31,17 +31,31 @@ export const sharedConfig: UserConfig = {
       imports: [
         'vue',
         {
-          'webextension-polyfill': [
-            ['*', 'browser'],
+          from: 'webextension-polyfill',
+          imports: [
+            ['default', 'browser'],
           ],
-          'lodash': [['*', '_']],
+          dtsDisabled: true,
+        },
+        {
           'moment': [['*', 'moment']],
           'naive-ui': [
             'useDialog',
           ],
+          'lodash-es': [
+            ['get', '_get'],
+            ['forEach', '_forEach'],
+            ['find', '_find'],
+            ['remove', '_remove'],
+            ['assign', '_assign'],
+
+            ['isEmpty', '_isEmpty'],
+            ['isFunction', '_isFunction'],
+          ],
         },
       ],
       dts: r('src/auto-imports.d.ts'),
+      vueTemplate: true,
     }),
 
     // https://github.com/antfu/unplugin-vue-components
@@ -94,6 +108,7 @@ export default defineConfig(({ command }) => ({
     hmr: {
       host: 'localhost',
     },
+    origin: `http://localhost:${port}`,
   },
   build: {
     watch: isDev
@@ -110,6 +125,7 @@ export default defineConfig(({ command }) => ({
       input: {
         options: r('src/options/index.html'),
         popup: r('src/popup/index.html'),
+        sidepanel: r('src/sidepanel/index.html'),
       },
     },
   },

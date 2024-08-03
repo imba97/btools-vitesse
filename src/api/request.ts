@@ -1,9 +1,9 @@
-export const useRequest = (baseUrl: string) => {
+export function useRequest(baseUrl: string) {
   const get = async (path: string, data?: any) => {
     const url = new URL(`${baseUrl}${path}`)
 
     if (data) {
-      _.forEach(data, (value, key) => {
+      _forEach(data, (value, key) => {
         url.searchParams.append(key, value)
       })
     }
@@ -20,7 +20,7 @@ export const useRequest = (baseUrl: string) => {
     const formData = new FormData()
 
     if (data) {
-      _.forEach(data, (value, key) => {
+      _forEach(data, (value, key) => {
         formData.append(key, value)
       })
     }

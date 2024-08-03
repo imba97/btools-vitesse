@@ -14,7 +14,7 @@ export async function getManifest() {
     version: pkg.version,
     description: pkg.description,
     action: {
-      default_icon: './assets/icon-512.png',
+      default_icon: './assets/icon/128.png',
       default_popup: './dist/popup/index.html',
     },
     options_ui: {
@@ -30,9 +30,9 @@ export async function getManifest() {
           service_worker: './dist/background/index.mjs',
         },
     icons: {
-      16: './assets/icon-512.png',
-      48: './assets/icon-512.png',
-      128: './assets/icon-512.png',
+      16: './assets/icon/16.png',
+      48: './assets/icon/48.png',
+      128: './assets/icon/128.png',
     },
     permissions: [
       'tabs',
@@ -40,6 +40,7 @@ export async function getManifest() {
       'webRequest',
       'activeTab',
       'cookies',
+      'sidePanel',
     ],
     host_permissions: ['*://*/*'],
     content_scripts: [
@@ -64,6 +65,19 @@ export async function getManifest() {
         ? `script-src \'self\' http://localhost:${port}; object-src \'self\'`
         : 'script-src \'self\'; object-src \'self\'',
     },
+  }
+
+  // add sidepanel
+  if (isFirefox) {
+    manifest.sidebar_action = {
+      default_panel: 'dist/sidepanel/index.html',
+    }
+  }
+  else {
+    // the sidebar_action does not work for chromium based
+    (manifest as any).side_panel = {
+      default_path: 'dist/sidepanel/index.html',
+    }
   }
 
   // FIXME: not work in MV3

@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
+
 import BilibiliApi from '~/api/bilibili'
 import { multipleAccountsStorage } from '~/storages/multipleAccounts'
 
-export const getCurrentAccount = async () => {
+export async function getCurrentAccount() {
   const cookies = await browser.cookies.getAll({
     domain: '.bilibili.com',
   })
@@ -15,14 +17,14 @@ export const getCurrentAccount = async () => {
 
   const accountCookie: { [key: string]: string | undefined } = {}
 
-  _.forEach(accountCookieNames, (key) => {
-    const cookie = _.find(cookies, { name: key })
+  _forEach(accountCookieNames, (key) => {
+    const cookie = _find(cookies, { name: key })
 
     accountCookie[key] = cookie?.value
   })
 
   // 设置当前账号 UID
-  multipleAccountsStorage.currentAccount.value = _.get(accountCookie, 'DedeUserID', '')
+  multipleAccountsStorage.currentAccount.value = _get(accountCookie, 'DedeUserID', '')
 
   console.log('currentAccount', multipleAccountsStorage.currentAccount.value)
 
@@ -30,7 +32,7 @@ export const getCurrentAccount = async () => {
 
   // 已登录
   if (accountCookie.DedeUserID) {
-    const account = _.find(multipleAccountsStorage.accounts.value, {
+    const account = _find(multipleAccountsStorage.accounts.value, {
       DedeUserID: accountCookie.DedeUserID,
     })
 
@@ -38,8 +40,8 @@ export const getCurrentAccount = async () => {
       const userInfo = await BilibiliApi.getUserInfo(accountCookie.DedeUserID)
 
       multipleAccountsStorage.accounts.value.push({
-        name: _.get(userInfo, 'data.name', ''),
-        face: _.get(userInfo, 'data.face', ''),
+        name: _get(userInfo, 'data.name', ''),
+        face: _get(userInfo, 'data.face', ''),
         SESSDATA: accountCookie.SESSDATA!,
         bili_jct: accountCookie.bili_jct!,
         DedeUserID: accountCookie.DedeUserID!,

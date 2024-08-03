@@ -9,11 +9,11 @@ const dialog = useDialog()
 
 const accountsList = computed(() => multipleAccountsStorage.accounts.value)
 
-const isCurrentAccount = (account: Account) => {
+function isCurrentAccount(account: Account) {
   return account.DedeUserID === multipleAccountsStorage.currentAccount.value
 }
 
-const changeAccount = async (account: Account) => {
+async function changeAccount(account: Account) {
   if (configStorage.accountChangeConfirm.value) {
     await withDialogPromise(dialog.warning, {
       title: '切换确认',
@@ -28,8 +28,8 @@ const changeAccount = async (account: Account) => {
       domain: '.bilibili.com',
     })
 
-  _.forEach(['SESSDATA', 'bili_jct', 'DedeUserID', 'DedeUserID__ckMd5'], (key: keyof Account) => {
-    let cookie: any = _.find(cookies, { name: key })
+  _forEach(['SESSDATA', 'bili_jct', 'DedeUserID', 'DedeUserID__ckMd5'], (key: keyof Account) => {
+    let cookie: any = _find(cookies, { name: key })
 
     if (!cookie) {
       cookie = {
@@ -65,7 +65,7 @@ const changeAccount = async (account: Account) => {
   })
 }
 
-const removeAccount = async (account: Account) => {
+async function removeAccount(account: Account) {
   await withDialogPromise(dialog.warning, {
     title: '删除确认',
     content: `确认删除 ${account.name}？`,
@@ -73,7 +73,7 @@ const removeAccount = async (account: Account) => {
     negativeText: '取消',
   })
 
-  _.remove(multipleAccountsStorage.accounts.value, {
+  _remove(multipleAccountsStorage.accounts.value, {
     DedeUserID: account.DedeUserID,
   })
 }

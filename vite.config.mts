@@ -31,13 +31,7 @@ export const sharedConfig: UserConfig = {
       imports: [
         'vue',
         {
-          from: 'webextension-polyfill',
-          imports: [
-            ['default', 'browser'],
-          ],
-          dtsDisabled: true,
-        },
-        {
+          'webextension-polyfill': [['*', 'browser']],
           'moment': [['*', 'moment']],
           'naive-ui': [
             'useDialog',

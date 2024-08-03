@@ -89,19 +89,19 @@ async function removeAccount(account: Account) {
       <div
         v-for="account in accountsList" :key="account.DedeUserID" class="account-item" :class="{
           actived: isCurrentAccount(account),
-        }" flex justify-between items-center b="~ solid" rounded-5 p-3
+        }" flex justify-between items-center gap-3 b="~ solid" rounded-2 px-3 py-1
       >
-        <div flex items-center gap-3>
+        <div flex="~ 1" items-center gap-3>
           <div>
-            <img :src="account.face" h-16 w-16 rounded-5>
+            <img :src="account.face" h-10 w-10 rounded-2>
           </div>
 
-          <div class="name" text-5>
+          <div class="name" max-w-46 text-5 text-truncate>
             {{ account.name }}
           </div>
         </div>
 
-        <div mt-3 flex gap-2>
+        <div flex gap-2>
           <n-button type="success" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
             切换
           </n-button>
@@ -117,13 +117,13 @@ async function removeAccount(account: Account) {
 
 <style lang="scss" scoped>
 .account-item {
-  --at-apply: b-gray;
+  --uno: b-gray;
 
   &.actived {
-    --at-apply: b-primary;
+    --uno: b-primary;
 
     .name {
-      --at-apply: text-primary;
+      --uno: text-primary;
     }
   }
 }

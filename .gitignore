@@ -12,9 +12,10 @@ dist
 dist-ssr
 extension/manifest.json
 node_modules
-src/auto-imports.d.ts
-src/components.d.ts
 .eslintcache
+
+# auto imports
+.auto-imports/
 
 # lock files
 package-lock.json

@@ -10,92 +10,106 @@ import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import AutoImport from 'unplugin-auto-import/vite'
 import UnoCSS from 'unocss/vite'
+import type { ImportsMap } from 'unplugin-auto-import/types'
 import { isDev, port, r } from './scripts/utils'
 import packageJson from './package.json'
 
-export const sharedConfig: UserConfig = {
-  root: r('src'),
-  resolve: {
-    alias: {
-      '~/': `${r('src')}/`,
-    },
-  },
-  define: {
-    __DEV__: isDev,
-    __NAME__: JSON.stringify(packageJson.name),
-  },
-  plugins: [
-    Vue(),
+import { AutoImportType } from './src/enums/vite'
 
-    AutoImport({
-      imports: [
-        'vue',
-        {
-          'webextension-polyfill': [['*', 'browser']],
-          'moment': [['*', 'moment']],
-          'naive-ui': [
-            'useDialog',
-          ],
-          'lodash-es': [
-            ['get', '_get'],
-            ['forEach', '_forEach'],
-            ['find', '_find'],
-            ['remove', '_remove'],
-            ['assign', '_assign'],
+export const sharedConfig: (type: AutoImportType) => UserConfig = (type) => {
+  const customImports: ImportsMap = type === AutoImportType.Background
+    ? {
+        'webextension-polyfill': [['*', 'browser']],
+        'moment': [['*', 'moment']],
+      }
+    : {
+        'webextension-polyfill': [['default', 'browser']],
+        'moment': [['default', 'moment']],
+      }
 
-            ['isEmpty', '_isEmpty'],
-            ['isFunction', '_isFunction'],
-          ],
-        },
-      ],
-      dts: r('src/auto-imports.d.ts'),
-      vueTemplate: true,
-    }),
-
-    // https://github.com/antfu/unplugin-vue-components
-    Components({
-      dirs: [r('src/components')],
-      // generate `components.d.ts` for ts support with Volar
-      dts: r('src/components.d.ts'),
-      resolvers: [
-        // auto import icons
-        IconsResolver({
-          prefix: '',
-        }),
-        NaiveUiResolver(),
-      ],
-    }),
-
-    // https://github.com/antfu/unplugin-icons
-    Icons(),
-
-    // https://github.com/unocss/unocss
-    UnoCSS(),
-
-    // rewrite assets to use relative path
-    {
-      name: 'assets-rewrite',
-      enforce: 'post',
-      apply: 'build',
-      transformIndexHtml(html, { path }) {
-        return html.replace(/"\/assets\//g, `"${relative(dirname(path), '/assets')}/`)
+  return {
+    root: r('src'),
+    resolve: {
+      alias: {
+        '~/': `${r('src')}/`,
       },
     },
-  ],
-  optimizeDeps: {
-    include: [
-      'vue',
-      '@vueuse/core',
-      'webextension-polyfill',
+    define: {
+      __DEV__: isDev,
+      __NAME__: JSON.stringify(packageJson.name),
+    },
+    plugins: [
+      Vue(),
+
+      AutoImport({
+        imports: [
+          'vue',
+          customImports,
+          {
+            'naive-ui': [
+              'useDialog',
+            ],
+            'lodash-es': [
+              ['get', '_get'],
+              ['forEach', '_forEach'],
+              ['find', '_find'],
+              ['remove', '_remove'],
+              ['assign', '_assign'],
+
+              ['isEmpty', '_isEmpty'],
+              ['isFunction', '_isFunction'],
+            ],
+          },
+        ],
+        dts: r(`.auto-imports/${type}.d.ts`),
+        vueTemplate: true,
+      }),
+
+      // https://github.com/antfu/unplugin-vue-components
+      Components({
+        dirs: [r('src/components')],
+        // generate `components.d.ts` for ts support with Volar
+        dts: r('.auto-imports/components.d.ts'),
+        resolvers: [
+          // auto import icons
+          IconsResolver({
+            prefix: '',
+          }),
+          NaiveUiResolver(),
+        ],
+      }),
+
+      // https://github.com/antfu/unplugin-icons
+      Icons(),
+
+      // https://github.com/unocss/unocss
+      UnoCSS(),
+
+      // rewrite assets to use relative path
+      {
+        name: 'assets-rewrite',
+        enforce: 'post',
+        apply: 'build',
+        transformIndexHtml(html, { path }) {
+          return html.replace(/"\/assets\//g, `"${relative(dirname(path), '/assets')}/`)
+        },
+      },
     ],
-    exclude: [
-      'vue-demi',
-    ],
-  },
+    optimizeDeps: {
+      include: [
+        'vue',
+        '@vueuse/core',
+        'webextension-polyfill',
+      ],
+      exclude: [
+        'vue-demi',
+      ],
+    },
+  }
 }
 
 export default defineConfig(({ command }) => ({
-  ...sharedConfig,
+  ...sharedConfig(AutoImportType.Shared),
   base: command === 'serve' ? `http://localhost:${port}/` : '/dist/',
   server: {
     port,

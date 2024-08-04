@@ -10,22 +10,15 @@ import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import AutoImport from 'unplugin-auto-import/vite'
 import UnoCSS from 'unocss/vite'
-import type { ImportsMap } from 'unplugin-auto-import/types'
 import { isDev, port, r } from './scripts/utils'
 import packageJson from './package.json'
 
 import { AutoImportType } from './src/enums/vite'
 
 export const sharedConfig: (type: AutoImportType) => UserConfig = (type) => {
-  const customImports: ImportsMap = type === AutoImportType.Background
-    ? {
-        'webextension-polyfill': [['*', 'browser']],
-        'moment': [['*', 'moment']],
-      }
-    : {
-        'webextension-polyfill': [['default', 'browser']],
-        'moment': [['default', 'moment']],
-      }
+  const isBackground = type === AutoImportType.Background
+
+  const importName = isBackground ? '*' : 'default'
 
   return {
     root: r('src'),
@@ -44,7 +37,10 @@ export const sharedConfig: (type: AutoImportType) => UserConfig = (type) => {
       AutoImport({
         imports: [
           'vue',
-          customImports,
+          {
+            'webextension-polyfill': [[importName, 'browser']],
+            'moment': [[importName, 'moment']],
+          },
           {
             'naive-ui': [
               'useDialog',
@@ -61,7 +57,7 @@ export const sharedConfig: (type: AutoImportType) => UserConfig = (type) => {
             ],
           },
         ],
-        dts: r(`.auto-imports/${type}.d.ts`),
+        dts: isBackground ? r(`.auto-imports/auto-imports.d.ts`) : false,
         vueTemplate: true,
       }),
 

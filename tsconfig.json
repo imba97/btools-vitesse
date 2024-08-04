@@ -12,7 +12,9 @@
     },
     "resolveJsonModule": true,
     "types": [
-      "vite/client"
+      "vite/client",
+      "./.auto-imports/auto-imports.d.ts",
+      "./.auto-imports/components.d.ts"
     ],
     "strict": true,
     "noUnusedLocals": true,

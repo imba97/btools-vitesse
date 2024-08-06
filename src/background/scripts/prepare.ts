@@ -1,4 +1,3 @@
-import moment from 'moment'
 import BilibiliApi from '~/api/bilibili'
 import { apiStorage } from '~/storages/api'
 

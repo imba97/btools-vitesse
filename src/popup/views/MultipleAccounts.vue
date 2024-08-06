@@ -1,9 +1,12 @@
 <script lang="ts" setup>
+import { NButton } from 'naive-ui'
 import { multipleAccountsStorage } from '~/storages/multipleAccounts'
 import { configStorage } from '~/storages/config'
 import { withDialogPromise } from '~/utils/dialog'
 
 import type { Account } from '~/storages/multipleAccounts'
+
+let selectedAccount: Account | null = null
 
 const dialog = useDialog()
 
@@ -13,16 +16,7 @@ function isCurrentAccount(account: Account) {
   return account.DedeUserID === multipleAccountsStorage.currentAccount.value
 }
 
-async function changeAccount(account: Account) {
-  if (configStorage.accountChangeConfirm.value) {
-    await withDialogPromise(dialog.warning, {
-      title: '切换确认',
-      content: `确认切换到账号 ${account.name}？`,
-      positiveText: '确定',
-      negativeText: '取消',
-    })
-  }
-
+async function setCookies(account?: Account) {
   const cookies = await browser.cookies
     .getAll({
       domain: '.bilibili.com',
@@ -46,7 +40,7 @@ async function changeAccount(account: Account) {
       }
     }
 
-    cookie.value = account[key]
+    cookie.value = _get(account, key, '')
 
     browser.cookies.set({
       url: 'https://bilibili.com',
@@ -60,22 +54,71 @@ async function changeAccount(account: Account) {
       storeId: cookie.storeId,
       value: cookie.value,
     })
-
-    multipleAccountsStorage.currentAccount.value = account.DedeUserID
   })
 }
 
-async function removeAccount(account: Account) {
+async function changeAccount(account: Account) {
+  if (configStorage.accountChangeConfirm.value) {
+    await withDialogPromise(dialog.warning, {
+      title: '切换确认',
+      content: `确认切换到账号 ${account.name}？`,
+      positiveText: '确定',
+      negativeText: '取消',
+    })
+  }
+
+  await setCookies(account)
+
+  multipleAccountsStorage.currentAccount.value = account.DedeUserID
+}
+
+async function removeAccount() {
+  if (!selectedAccount) {
+    return
+  }
+
   await withDialogPromise(dialog.warning, {
     title: '删除确认',
-    content: `确认删除 ${account.name}？`,
+    content: `确认删除 ${selectedAccount.name}？`,
     positiveText: '确定',
     negativeText: '取消',
   })
 
   _remove(multipleAccountsStorage.accounts.value, {
-    DedeUserID: account.DedeUserID,
+    DedeUserID: selectedAccount.DedeUserID,
   })
+}
+
+const handle = {
+  getOptions: (account: Account) => [
+    {
+      key: 'header',
+      type: 'render',
+      render() {
+        return h('div', {
+          class: 'p-3 flex items-center gap-3',
+        }, [
+          h(NButton, {
+            type: 'error',
+            ghost: true,
+            onClick: () => removeAccount(),
+          }, '删除'),
+          h(NButton, {
+            type: 'error',
+            ghost: true,
+            disabled: !isCurrentAccount(account),
+            onClick: () => {
+              setCookies()
+              multipleAccountsStorage.currentAccount.value = ''
+            },
+          }, '暂离'),
+        ])
+      },
+    },
+  ],
+  select(account: Account) {
+    selectedAccount = account
+  },
 }
 </script>
 
@@ -102,13 +145,15 @@ async function removeAccount(account: Account) {
         </div>
 
         <div flex gap-2>
-          <n-button type="success" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
+          <NButton type="success" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
             切换
-          </n-button>
+          </NButton>
 
-          <n-button type="error" ghost @click="removeAccount(account)">
-            删除
-          </n-button>
+          <NDropdown trigger="click" :show-arrow="true" :options="handle.getOptions(account)">
+            <NButton secondary @click="handle.select(account)">
+              更多
+            </NButton>
+          </NDropdown>
         </div>
       </div>
     </div>

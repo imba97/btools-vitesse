@@ -47,8 +47,10 @@ export const sharedConfig: (type: AutoImportType) => UserConfig = (type) => {
             ],
             'lodash-es': [
               ['get', '_get'],
+              ['map', '_map'],
               ['forEach', '_forEach'],
               ['find', '_find'],
+              ['reduce', '_reduce'],
               ['remove', '_remove'],
               ['assign', '_assign'],
 

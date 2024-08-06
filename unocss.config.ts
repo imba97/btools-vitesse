@@ -1,5 +1,6 @@
 import { defineConfig } from 'unocss/vite'
 import { presetAttributify, presetIcons, presetUno, transformerDirectives } from 'unocss'
+import { generateColors } from './scripts/unocss'
 
 export default defineConfig({
   presets: [
@@ -11,8 +12,8 @@ export default defineConfig({
     transformerDirectives(),
   ],
   theme: {
-    colors: {
+    colors: generateColors({
       primary: '#1d9271',
-    },
+    }),
   },
 })

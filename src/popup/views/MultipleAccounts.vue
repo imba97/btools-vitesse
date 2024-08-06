@@ -163,7 +163,7 @@ const handle = {
   --uno: b-gray;
 
   &.actived {
-    --uno: b-primary;
+    --uno: b-primary bg-primary-100;
 
     .name {
       --uno: text-primary;

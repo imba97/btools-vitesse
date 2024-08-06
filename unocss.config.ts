@@ -13,7 +13,7 @@ export default defineConfig({
   ],
   theme: {
     colors: generateColors({
-      primary: '#1d9271',
+      primary: '#18a058',
     }),
   },
 })

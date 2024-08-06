@@ -6,10 +6,10 @@ export function generateColors(colors: Record<string, string>) {
 
     acc[key] = {
       DEFAULT: defaultColor,
-      100: Color(defaultColor).lighten(0.8).hex(),
-      200: Color(defaultColor).lighten(0.6).hex(),
-      300: Color(defaultColor).lighten(0.4).hex(),
-      400: Color(defaultColor).lighten(0.2).hex(),
+      100: Color(defaultColor).lighten(1.5).hex(),
+      200: Color(defaultColor).lighten(1.25).hex(),
+      300: Color(defaultColor).lighten(1).hex(),
+      400: Color(defaultColor).lighten(0.75).hex(),
     }
 
     return acc

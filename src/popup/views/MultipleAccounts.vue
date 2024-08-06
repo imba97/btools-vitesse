@@ -135,9 +135,7 @@ const handle = {
         }" flex justify-between items-center gap-3 b="~ solid" rounded-2 px-3 py-1
       >
         <div flex="~ 1" items-center gap-3>
-          <div>
-            <img :src="account.face" h-10 w-10 rounded-2>
-          </div>
+          <img :src="account.face" h-10 w-10 rounded-2>
 
           <div class="name" max-w-46 text-5 text-truncate>
             {{ account.name }}

@@ -1,14 +1,77 @@
+<style lang="scss" scoped>
+.account-item {
+  --uno: b-gray;
+
+  &.actived {
+    --uno: b-primary bg-primary-100;
+
+    .name {
+      --uno: text-primary;
+    }
+  }
+}
+</style>
+
+<template>
+  <div max-h-100 of-y-auto>
+    <div
+      flex="~ col" gap-3 :class="{
+        'mr-6': accountsList.length >= 5
+      }"
+    >
+      <div
+        v-for="account in accountsList" :key="account.DedeUserID" class="account-item" :class="{
+          actived: isCurrentAccount(account)
+        }" b="~ solid" flex items-center justify-between gap-3 rounded-2 px-3 py-1
+      >
+        <div flex="~ 1" items-center gap-3>
+          <img :src="account.face" h-10 w-10 rounded-2>
+
+          <div class="name" max-w-46 text-truncate text-5>
+            {{ account.name }}
+          </div>
+        </div>
+
+        <div flex gap-2>
+          <AButton type="primary" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
+            切换
+          </AButton>
+
+          <ADropdown trigger="click">
+            <AButton secondary @click="selectedAccount = account">
+              更多
+            </AButton>
+
+            <template #overlay>
+              <AMenu>
+                <AMenuItem :disabled="!isCurrentAccount(account)" @click="leaveAccount">
+                  暂离
+                </AMenuItem>
+
+                <AMenuItem @click="removeAccount">
+                  <span size-full text-red-6>
+                    删除
+                  </span>
+                </AMenuItem>
+              </AMenu>
+            </template>
+          </ADropdown>
+        </div>
+      </div>
+    </div>
+
+    <ContextHolder />
+  </div>
+</template>
+
 <script lang="ts" setup>
-import { NButton } from 'naive-ui'
-import { multipleAccountsStorage } from '~/storages/multipleAccounts'
-import { configStorage } from '~/storages/config'
-import { withDialogPromise } from '~/utils/dialog'
-
 import type { Account } from '~/storages/multipleAccounts'
+import { configStorage } from '~/storages/config'
+import { multipleAccountsStorage } from '~/storages/multipleAccounts'
 
-let selectedAccount: Account | null = null
+const [modal, ContextHolder] = Modal.useModal()
 
-const dialog = useDialog()
+const selectedAccount = ref<Account | null>(null)
 
 const accountsList = computed(() => multipleAccountsStorage.accounts.value)
 
@@ -19,7 +82,7 @@ function isCurrentAccount(account: Account) {
 async function setCookies(account?: Account) {
   const cookies = await browser.cookies
     .getAll({
-      domain: '.bilibili.com',
+      domain: '.bilibili.com'
     })
 
   _forEach(['SESSDATA', 'bili_jct', 'DedeUserID', 'DedeUserID__ckMd5'], (key: keyof Account) => {
@@ -36,7 +99,7 @@ async function setCookies(account?: Account) {
         sameSite: 'unspecified',
         secure: false,
         storeId: '0',
-        value: '',
+        value: ''
       }
     }
 
@@ -52,19 +115,19 @@ async function setCookies(account?: Account) {
       sameSite: cookie.sameSite,
       secure: cookie.secure,
       storeId: cookie.storeId,
-      value: cookie.value,
+      value: cookie.value
     })
   })
 }
 
 async function changeAccount(account: Account) {
   if (configStorage.accountChangeConfirm.value) {
-    await withDialogPromise(dialog.warning, {
-      title: '切换确认',
-      content: `确认切换到账号 ${account.name}？`,
-      positiveText: '确定',
-      negativeText: '取消',
-    })
+    await promisifyModal(
+      modal.confirm({
+        title: '切换确认',
+        content: `确认切换到账号 ${account.name}？`
+      })
+    )
   }
 
   await setCookies(account)
@@ -73,101 +136,26 @@ async function changeAccount(account: Account) {
 }
 
 async function removeAccount() {
-  if (!selectedAccount) {
+  if (!selectedAccount.value) {
     return
   }
 
-  await withDialogPromise(dialog.warning, {
-    title: '删除确认',
-    content: `确认删除 ${selectedAccount.name}？`,
-    positiveText: '确定',
-    negativeText: '取消',
-  })
+  await promisifyModal(
+    modal.confirm({
+      title: '删除确认',
+      content: `确认删除 ${selectedAccount.value.name}？`,
+      type: 'warning'
+    })
+  )
 
   _remove(multipleAccountsStorage.accounts.value, {
-    DedeUserID: selectedAccount.DedeUserID,
+    DedeUserID: selectedAccount.value.DedeUserID
   })
 }
 
-const handle = {
-  getOptions: (account: Account) => [
-    {
-      key: 'header',
-      type: 'render',
-      render() {
-        return h('div', {
-          class: 'p-3 flex items-center gap-3',
-        }, [
-          h(NButton, {
-            type: 'error',
-            ghost: true,
-            onClick: () => removeAccount(),
-          }, '删除'),
-          h(NButton, {
-            type: 'error',
-            ghost: true,
-            disabled: !isCurrentAccount(account),
-            onClick: () => {
-              setCookies()
-              multipleAccountsStorage.currentAccount.value = ''
-            },
-          }, '暂离'),
-        ])
-      },
-    },
-  ],
-  select(account: Account) {
-    selectedAccount = account
-  },
+// 暂离
+function leaveAccount() {
+  setCookies()
+  multipleAccountsStorage.currentAccount.value = ''
 }
 </script>
-
-<template>
-  <n-scrollbar max-h-100>
-    <div
-      flex="~ col" gap-3 :class="{
-        'mr-6': accountsList.length >= 5,
-      }"
-    >
-      <div
-        v-for="account in accountsList" :key="account.DedeUserID" class="account-item" :class="{
-          actived: isCurrentAccount(account),
-        }" flex justify-between items-center gap-3 b="~ solid" rounded-2 px-3 py-1
-      >
-        <div flex="~ 1" items-center gap-3>
-          <img :src="account.face" h-10 w-10 rounded-2>
-
-          <div class="name" max-w-46 text-5 text-truncate>
-            {{ account.name }}
-          </div>
-        </div>
-
-        <div flex gap-2>
-          <NButton type="success" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
-            切换
-          </NButton>
-
-          <NDropdown trigger="click" :show-arrow="true" :options="handle.getOptions(account)">
-            <NButton secondary @click="handle.select(account)">
-              更多
-            </NButton>
-          </NDropdown>
-        </div>
-      </div>
-    </div>
-  </n-scrollbar>
-</template>
-
-<style lang="scss" scoped>
-.account-item {
-  --uno: b-gray;
-
-  &.actived {
-    --uno: b-primary bg-primary-100;
-
-    .name {
-      --uno: text-primary;
-    }
-  }
-}
-</style>

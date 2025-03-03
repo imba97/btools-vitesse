@@ -11,5 +11,5 @@ export interface Account {
 
 export const multipleAccountsStorage = {
   currentAccount: useWebExtensionStorage<string>('currentAccount', ''),
-  accounts: useWebExtensionStorage<Account[]>('accounts', []),
+  accounts: useWebExtensionStorage<Account[]>('accounts', [])
 }

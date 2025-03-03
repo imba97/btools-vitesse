@@ -15,8 +15,4 @@ node_modules
 .eslintcache
 
 # auto imports
-.auto-imports/
-
-# lock files
-package-lock.json
-pnpm-lock.yaml
+.auto-imports

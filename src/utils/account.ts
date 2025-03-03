@@ -5,14 +5,14 @@ import { multipleAccountsStorage } from '~/storages/multipleAccounts'
 
 export async function getCurrentAccount() {
   const cookies = await browser.cookies.getAll({
-    domain: '.bilibili.com',
+    domain: '.bilibili.com'
   })
 
   const accountCookieNames = [
     'SESSDATA',
     'bili_jct',
     'DedeUserID',
-    'DedeUserID__ckMd5',
+    'DedeUserID__ckMd5'
   ]
 
   const accountCookie: { [key: string]: string | undefined } = {}
@@ -33,10 +33,18 @@ export async function getCurrentAccount() {
   // 已登录
   if (accountCookie.DedeUserID) {
     const account = _find(multipleAccountsStorage.accounts.value, {
-      DedeUserID: accountCookie.DedeUserID,
+      DedeUserID: accountCookie.DedeUserID
     })
 
-    if (!account) {
+    const isNotData = [account?.name, account?.face].some(_isEmpty)
+
+    if (isNotData) {
+      _remove(multipleAccountsStorage.accounts.value, {
+        DedeUserID: accountCookie.DedeUserID
+      })
+    }
+
+    if (!account || isNotData) {
       const userInfo = await BilibiliApi.getUserInfo(accountCookie.DedeUserID)
 
       multipleAccountsStorage.accounts.value.push({
@@ -45,7 +53,7 @@ export async function getCurrentAccount() {
         SESSDATA: accountCookie.SESSDATA!,
         bili_jct: accountCookie.bili_jct!,
         DedeUserID: accountCookie.DedeUserID!,
-        DedeUserID__ckMd5: accountCookie.DedeUserID__ckMd5!,
+        DedeUserID__ckMd5: accountCookie.DedeUserID__ckMd5!
       })
     }
     else {

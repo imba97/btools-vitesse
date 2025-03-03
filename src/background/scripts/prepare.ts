@@ -12,7 +12,7 @@ import { apiStorage } from '~/storages/api'
     apiStorage.wbi.value = {
       img_key: wbi.img_key,
       sub_key: wbi.sub_key,
-      expiration: today,
+      expiration: today
     }
   }
 })()
@@ -26,11 +26,11 @@ async function getWbiKeys() {
   return {
     img_key: img_url.slice(
       img_url.lastIndexOf('/') + 1,
-      img_url.lastIndexOf('.'),
+      img_url.lastIndexOf('.')
     ),
     sub_key: sub_url.slice(
       sub_url.lastIndexOf('/') + 1,
-      sub_url.lastIndexOf('.'),
-    ),
+      sub_url.lastIndexOf('.')
+    )
   }
 }

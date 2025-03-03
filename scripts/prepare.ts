@@ -1,14 +1,14 @@
 // generate stub index.html files for dev entry
 import { execSync } from 'node:child_process'
-import fs from 'fs-extra'
 import chokidar from 'chokidar'
+import fs from 'fs-extra'
 import { isDev, log, port, r } from './utils'
 
 /**
  * Stub index.html to use Vite in development
  */
 async function stubIndexHtml() {
-  const views = ['options', 'popup', 'sidepanel']
+  const views = ['options', 'popup']
 
   for (const view of views) {
     await fs.ensureDir(r(`extension/dist/${view}`))

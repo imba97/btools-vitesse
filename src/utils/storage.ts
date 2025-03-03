@@ -5,6 +5,6 @@ export function withComputed<T>(data: Ref<T>) {
     },
     set(value) {
       data.value = value
-    },
+    }
   })
 }

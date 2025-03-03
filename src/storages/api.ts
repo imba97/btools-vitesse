@@ -10,6 +10,6 @@ export const apiStorage = {
   wbi: useWebExtensionStorage<Wbi>('wbi', {
     img_key: '',
     sub_key: '',
-    expiration: '',
-  }),
+    expiration: ''
+  })
 }

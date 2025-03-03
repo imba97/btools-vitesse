@@ -1,15 +1,15 @@
-import { StorageSerializers } from '@vueuse/core'
-import { pausableWatch, toValue, tryOnScopeDispose } from '@vueuse/shared'
-import { ref, shallowRef } from 'vue-demi'
-import { storage } from 'webextension-polyfill'
-
 import type {
   StorageLikeAsync,
-  UseStorageAsyncOptions,
+  UseStorageAsyncOptions
 } from '@vueuse/core'
 import type { MaybeRefOrGetter, RemovableRef } from '@vueuse/shared'
 import type { Ref } from 'vue-demi'
 import type { Storage } from 'webextension-polyfill'
+
+import { StorageSerializers } from '@vueuse/core'
+import { pausableWatch, tryOnScopeDispose } from '@vueuse/shared'
+import { ref, shallowRef } from 'vue-demi'
+import { storage } from 'webextension-polyfill'
 
 export type WebExtensionStorageOptions<T> = UseStorageAsyncOptions<T>
 
@@ -46,8 +46,8 @@ const storageInterface: StorageLikeAsync = {
   async getItem(key: string) {
     const storedData = await storage.local.get(key)
 
-    return storedData[key]
-  },
+    return storedData[key] as string
+  }
 }
 
 /**
@@ -60,7 +60,7 @@ const storageInterface: StorageLikeAsync = {
 export function useWebExtensionStorage<T>(
   key: string,
   initialValue: MaybeRefOrGetter<T>,
-  options: WebExtensionStorageOptions<T> = {},
+  options: WebExtensionStorageOptions<T> = {}
 ): RemovableRef<T> {
   const {
     flush = 'pre',
@@ -72,7 +72,7 @@ export function useWebExtensionStorage<T>(
     eventFilter,
     onError = (e) => {
       console.error(e)
-    },
+    }
   } = options
 
   const rawInit: T = toValue(initialValue)
@@ -130,8 +130,8 @@ export function useWebExtensionStorage<T>(
     {
       flush,
       deep,
-      eventFilter,
-    },
+      eventFilter
+    }
   )
 
   if (listenToStorageChanges) {
@@ -141,7 +141,7 @@ export function useWebExtensionStorage<T>(
         for (const [key, change] of Object.entries(changes)) {
           await read({
             key,
-            newValue: change.newValue as string | null,
+            newValue: change.newValue as string | null
           })
         }
       }

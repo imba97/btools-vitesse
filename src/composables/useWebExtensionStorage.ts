@@ -51,13 +51,11 @@ const storageInterface: StorageLikeAsync = {
 }
 
 /**
- * https://github.com/vueuse/vueuse/blob/658444bf9f8b96118dbd06eba411bb6639e24e88/packages/core/useStorageAsync/index.ts
- *
  * @param key
  * @param initialValue
  * @param options
  */
-export function useWebExtensionStorage<T>(
+function createStorage<T>(
   key: string,
   initialValue: MaybeRefOrGetter<T>,
   options: WebExtensionStorageOptions<T> = {}
@@ -158,4 +156,20 @@ export function useWebExtensionStorage<T>(
   }
 
   return data as RemovableRef<T>
+}
+
+export function useWebExtensionStorage(type: string) {
+  return {
+    useStorage<T>(
+      key: string,
+      initialValue: MaybeRefOrGetter<T>,
+      options: WebExtensionStorageOptions<T> = {}
+    ): RemovableRef<T> {
+      return createStorage<T>(
+        `${type}.${key}`,
+        initialValue,
+        options
+      )
+    }
+  }
 }

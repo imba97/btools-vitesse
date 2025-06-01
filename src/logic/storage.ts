@@ -1,3 +1,3 @@
-import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
+import { createStorage } from '~/composables/useWebExtensionStorage'
 
-export const storageDemo = useWebExtensionStorage('webext-demo', 'Storage Demo')
+export const storageDemo = createStorage('webext-demo', 'Storage Demo')

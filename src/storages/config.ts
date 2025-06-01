@@ -1,5 +1,7 @@
 import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
 
+const { useStorage } = useWebExtensionStorage('config')
+
 export const configStorage = {
-  accountChangeConfirm: useWebExtensionStorage<boolean>('accountChangeConfirm', false)
+  accountChangeConfirm: useStorage<boolean>('accountChangeConfirm', false)
 }

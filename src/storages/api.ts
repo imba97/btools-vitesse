@@ -6,8 +6,10 @@ interface Wbi {
   expiration: string
 }
 
+const { useStorage } = useWebExtensionStorage('api')
+
 export const apiStorage = {
-  wbi: useWebExtensionStorage<Wbi>('wbi', {
+  wbi: useStorage<Wbi>('wbi', {
     img_key: '',
     sub_key: '',
     expiration: ''

@@ -9,7 +9,9 @@ export interface Account {
   DedeUserID__ckMd5: string
 }
 
+const { useStorage } = useWebExtensionStorage('multipleAccounts')
+
 export const multipleAccountsStorage = {
-  currentAccount: useWebExtensionStorage<string>('currentAccount', ''),
-  accounts: useWebExtensionStorage<Account[]>('accounts', [])
+  currentAccount: useStorage<string>('currentAccount', ''),
+  accounts: useStorage<Account[]>('accounts', [])
 }

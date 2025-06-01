@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import BilibiliApi from '~/api/bilibili'
 import { multipleAccountsStorage } from '~/storages/multipleAccounts'
 
@@ -25,10 +23,6 @@ export async function getCurrentAccount() {
 
   // 设置当前账号 UID
   multipleAccountsStorage.currentAccount.value = _get(accountCookie, 'DedeUserID', '')
-
-  console.log('currentAccount', multipleAccountsStorage.currentAccount.value)
-
-  console.log(multipleAccountsStorage.accounts.value)
 
   // 已登录
   if (accountCookie.DedeUserID) {
@@ -57,10 +51,12 @@ export async function getCurrentAccount() {
       })
     }
     else {
+      // eslint-disable-next-line no-console
       console.log('account', account)
     }
   }
   else {
+    // eslint-disable-next-line no-console
     console.log('未登录')
   }
 }

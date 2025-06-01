@@ -13,8 +13,7 @@
     "resolveJsonModule": true,
     "types": [
       "vite/client",
-      "./.auto-imports/auto-imports.d.ts",
-      "./.auto-imports/components.d.ts"
+      "vitest"
     ],
     "strict": true,
     "noUnusedLocals": true,
@@ -22,5 +21,9 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
+  "include": [
+    "src/**/*",
+    ".auto-imports/*.d.ts"
+  ],
   "exclude": ["dist", "node_modules"]
 }

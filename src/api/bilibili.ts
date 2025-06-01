@@ -1,5 +1,5 @@
 import type { ReplyParams } from './data/bilibili.data'
-import crypto from 'node:crypto'
+import md5 from 'md5'
 import { apiStorage } from '~/storages/api'
 import { useRequest } from './request'
 
@@ -45,7 +45,7 @@ function withWbi(params: Record<string, any>) {
     .join('&')
 
   // 计算 md5
-  const wbi_sign = crypto.createHash('md5').update(query + mixin_key).digest('hex')
+  const wbi_sign = md5(query + mixin_key)
 
   return _assign(params, {
     w_rid: wbi_sign

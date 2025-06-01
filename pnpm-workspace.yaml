@@ -1,0 +1,7 @@
+onlyBuiltDependencies:
+  - core-js
+  - esbuild
+  - simple-git-hooks
+  - spawn-sync
+  - unrs-resolver
+  - vue-demi

@@ -1,15 +1,15 @@
 <template>
   <div max-h-100 of-y-auto>
-    <AList>
-      <AListItem px-2="!">
+    <AntList>
+      <AntListItem px-2="!">
         <div w-full flex items-center justify-between>
           <div text="4">
             切换账号前确认
           </div>
-          <ASwitch v-model:checked="accountChangeConfirm" />
+          <AntSwitch v-model:checked="accountChangeConfirm" />
         </div>
-      </AListItem>
-    </AList>
+      </AntListItem>
+    </AntList>
   </div>
 </template>
 

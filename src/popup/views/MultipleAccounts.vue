@@ -33,29 +33,29 @@
         </div>
 
         <div flex gap-2>
-          <AButton type="primary" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
+          <AntButton type="primary" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
             切换
-          </AButton>
+          </AntButton>
 
-          <ADropdown trigger="click">
-            <AButton secondary @click="selectedAccount = account">
+          <AntDropdown trigger="click">
+            <AntButton secondary @click="selectedAccount = account">
               更多
-            </AButton>
+            </AntButton>
 
             <template #overlay>
-              <AMenu>
-                <AMenuItem :disabled="!isCurrentAccount(account)" @click="leaveAccount">
+              <AntMenu>
+                <AntMenuItem :disabled="!isCurrentAccount(account)" @click="leaveAccount">
                   暂离
-                </AMenuItem>
+                </AntMenuItem>
 
-                <AMenuItem @click="removeAccount">
+                <AntMenuItem @click="removeAccount">
                   <span size-full text-red-6>
                     删除
                   </span>
-                </AMenuItem>
-              </AMenu>
+                </AntMenuItem>
+              </AntMenu>
             </template>
-          </ADropdown>
+          </AntDropdown>
         </div>
       </div>
     </div>

@@ -1,13 +1,9 @@
-/// <reference types="vitest" />
-
 import type { UserConfig } from 'vite'
 import { dirname, relative } from 'node:path'
 import Vue from '@vitejs/plugin-vue'
 import LodashImports from 'lodash-imports'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import IconsResolver from 'unplugin-icons/resolver'
-import Icons from 'unplugin-icons/vite'
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
@@ -58,17 +54,11 @@ export const sharedConfig: UserConfig = {
       dts: r('.auto-imports/components.d.ts'),
       resolvers: [
         AntDesignVueResolver({
-          importStyle: 'css-in-js'
-        }),
-        // auto import icons
-        IconsResolver({
-          prefix: ''
+          importStyle: 'less',
+          prefix: 'Ant'
         })
       ]
     }),
-
-    // https://github.com/antfu/unplugin-icons
-    Icons(),
 
     // https://github.com/unocss/unocss
     UnoCSS(),
@@ -83,6 +73,15 @@ export const sharedConfig: UserConfig = {
       }
     }
   ],
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern'
+      }
+    }
+  },
+
   optimizeDeps: {
     include: [
       'vue',

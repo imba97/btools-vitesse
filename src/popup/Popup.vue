@@ -1,16 +1,16 @@
 <template>
-  <AConfigProvider :locale="zhCN" :theme="theme">
+  <AntConfigProvider :locale="zhCN" :theme="theme">
     <div min-h-72 w-128 px-3 pb-3>
-      <ATabs v-model:value="currentNavbarType" type="line" animated>
-        <ATabPane :key="PopupNavbarType.MultipleAccounts" tab="多帐号">
+      <AntTabs v-model:value="currentNavbarType" type="line" animated>
+        <AntTabPane :key="PopupNavbarType.MultipleAccounts" tab="多帐号">
           <MultipleAccounts />
-        </ATabPane>
-        <ATabPane :key="PopupNavbarType.Config" tab="设置">
+        </AntTabPane>
+        <AntTabPane :key="PopupNavbarType.Config" tab="设置">
           <Config />
-        </ATabPane>
-      </ATabs>
+        </AntTabPane>
+      </AntTabs>
     </div>
-  </AConfigProvider>
+  </AntConfigProvider>
 </template>
 
 <script setup lang="ts">

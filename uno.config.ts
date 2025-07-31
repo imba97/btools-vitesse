@@ -1,12 +1,13 @@
 import { unoColors } from 'uno-colors'
-import { presetAttributify, presetIcons, presetWind3, transformerDirectives } from 'unocss'
-import { defineConfig } from 'unocss/vite'
+import { defineConfig, presetAttributify, presetIcons, presetWind3, transformerDirectives } from 'unocss'
 
 export default defineConfig({
   presets: [
     presetWind3(),
     presetAttributify(),
-    presetIcons()
+    presetIcons({
+      cdn: 'https://esm.sh/'
+    })
   ],
   transformers: [
     transformerDirectives()

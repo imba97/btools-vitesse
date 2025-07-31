@@ -20,7 +20,7 @@ import App from './views/App.vue'
   const styleEl = document.createElement('link')
   const shadowDOM = container.attachShadow?.({ mode: __DEV__ ? 'open' : 'closed' }) || container
   styleEl.setAttribute('rel', 'stylesheet')
-  styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/style.css'))
+  styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/btools-vitesse.css'))
   shadowDOM.appendChild(styleEl)
   shadowDOM.appendChild(root)
   document.body.appendChild(container)

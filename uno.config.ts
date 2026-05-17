@@ -6,7 +6,12 @@ export default defineConfig({
     presetWind3(),
     presetAttributify(),
     presetIcons({
-      cdn: 'https://esm.sh/'
+      cdn: 'https://esm.sh/',
+      scale: 1.2,
+      extraProperties: {
+        'display': 'inline-block',
+        'vertical-align': 'text-bottom'
+      }
     })
   ],
   transformers: [

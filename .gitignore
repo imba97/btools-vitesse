@@ -13,6 +13,7 @@ dist-ssr
 extension/manifest.json
 node_modules
 .eslintcache
+.coverage/
 
 # auto imports
 .auto-imports

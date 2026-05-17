@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1778992530941" clover="3.2.0">
+  <project timestamp="1778992530941" name="All files">
+    <metrics statements="134" coveredstatements="87" conditionals="87" coveredconditionals="41" methods="33" coveredmethods="18" elements="254" coveredelements="146" complexity="0" loc="134" ncloc="134" packages="3" files="4" classes="4"/>
+    <package name="api">
+      <metrics statements="45" coveredstatements="35" conditionals="21" coveredconditionals="13" methods="11" coveredmethods="7"/>
+      <file name="request.ts" path="D:\Projects\btools-vitesse\src\api\request.ts">
+        <metrics statements="45" coveredstatements="35" conditionals="21" coveredconditionals="13" methods="11" coveredmethods="7"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="32" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="33" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="36" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="51" count="3" type="stmt"/>
+        <line num="52" count="5" type="stmt"/>
+        <line num="53" count="5" type="stmt"/>
+        <line num="55" count="5" type="stmt"/>
+        <line num="56" count="5" type="stmt"/>
+        <line num="61" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="73" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="74" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="75" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="78" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="81" count="2" type="stmt"/>
+        <line num="82" count="2" type="stmt"/>
+        <line num="85" count="5" type="stmt"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="93" count="3" type="stmt"/>
+        <line num="94" count="3" type="stmt"/>
+        <line num="96" count="3" type="cond" truecount="1" falsecount="1"/>
+        <line num="97" count="0" type="stmt"/>
+        <line num="98" count="0" type="stmt"/>
+        <line num="102" count="3" type="stmt"/>
+        <line num="108" count="3" type="stmt"/>
+        <line num="109" count="0" type="stmt"/>
+        <line num="111" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="112" count="0" type="stmt"/>
+        <line num="113" count="0" type="stmt"/>
+        <line num="117" count="0" type="stmt"/>
+        <line num="124" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="background">
+      <metrics statements="42" coveredstatements="25" conditionals="14" coveredconditionals="4" methods="10" coveredmethods="3"/>
+      <file name="contentScriptHMR.ts" path="D:\Projects\btools-vitesse\src\background\contentScriptHMR.ts">
+        <metrics statements="9" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="4" coveredmethods="0"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="7" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="24" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="28" count="0" type="stmt"/>
+      </file>
+      <file name="main.ts" path="D:\Projects\btools-vitesse\src\background\main.ts">
+        <metrics statements="33" coveredstatements="25" conditionals="8" coveredconditionals="4" methods="6" coveredmethods="3"/>
+        <line num="8" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="30" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="41" count="2" type="stmt"/>
+        <line num="43" count="2" type="stmt"/>
+        <line num="47" count="2" type="stmt"/>
+        <line num="48" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="64" count="1" type="stmt"/>
+        <line num="65" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="68" count="2" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="composables">
+      <metrics statements="47" coveredstatements="27" conditionals="52" coveredconditionals="24" methods="12" coveredmethods="8"/>
+      <file name="useWebExtensionStorage.ts" path="D:\Projects\btools-vitesse\src\composables\useWebExtensionStorage.ts">
+        <metrics statements="47" coveredstatements="27" conditionals="52" coveredconditionals="24" methods="12" coveredmethods="8"/>
+        <line num="19" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="75" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="76" count="1" type="cond" truecount="2" falsecount="0"/>
+        <line num="79" count="1" type="cond" truecount="2" falsecount="2"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="83" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="84" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="86" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="89" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="90" count="0" type="stmt"/>
+        <line num="91" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="93" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="95" count="0" type="stmt"/>
+        <line num="98" count="1" type="stmt"/>
+        <line num="102" count="0" type="stmt"/>
+        <line num="106" count="1" type="stmt"/>
+        <line num="109" count="1" type="stmt"/>
+        <line num="110" count="1" type="stmt"/>
+        <line num="117" count="0" type="stmt"/>
+        <line num="121" count="1" type="stmt"/>
+        <line num="131" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="132" count="1" type="stmt"/>
+        <line num="133" count="0" type="stmt"/>
+        <line num="134" count="0" type="stmt"/>
+        <line num="135" count="0" type="stmt"/>
+        <line num="136" count="0" type="stmt"/>
+        <line num="143" count="0" type="stmt"/>
+        <line num="147" count="1" type="stmt"/>
+        <line num="149" count="1" type="stmt"/>
+        <line num="150" count="0" type="stmt"/>
+        <line num="154" count="1" type="stmt"/>
+        <line num="158" count="1" type="stmt"/>
+        <line num="164" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

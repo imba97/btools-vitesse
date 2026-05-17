@@ -2,7 +2,8 @@ import type {
   StorageLikeAsync,
   UseStorageAsyncOptions
 } from '@vueuse/core'
-import type { MaybeRefOrGetter, RemovableRef } from '@vueuse/shared'
+import type { RemovableRef } from '@vueuse/shared'
+import type { MaybeRefOrGetter } from 'vue'
 import type { Ref } from 'vue-demi'
 import type { Storage } from 'webextension-polyfill'
 
@@ -50,11 +51,6 @@ const storageInterface: StorageLikeAsync = {
   }
 }
 
-/**
- * @param key
- * @param initialValue
- * @param options
- */
 function createStorage<T>(
   key: string,
   initialValue: MaybeRefOrGetter<T>,
@@ -65,10 +61,9 @@ function createStorage<T>(
     deep = true,
     listenToStorageChanges = true,
     writeDefaults = true,
-    mergeDefaults = false,
     shallow,
     eventFilter,
-    onError = (e) => {
+    onError = (e: unknown) => {
       console.error(e)
     }
   } = options
@@ -89,14 +84,6 @@ function createStorage<T>(
         data.value = rawInit
         if (writeDefaults && rawInit !== null)
           await storageInterface.setItem(key, await serializer.write(rawInit))
-      }
-      else if (mergeDefaults) {
-        const value = await serializer.read(rawValue) as T
-        if (typeof mergeDefaults === 'function')
-          data.value = mergeDefaults(value, rawInit)
-        else if (type === 'object' && !Array.isArray(value))
-          data.value = { ...(rawInit as Record<keyof unknown, unknown>), ...(value as Record<keyof unknown, unknown>) } as T
-        else data.value = value
       }
       else {
         data.value = await serializer.read(rawValue) as T
@@ -158,7 +145,7 @@ function createStorage<T>(
   return data as RemovableRef<T>
 }
 
-export function useWebExtensionStorage(type: string) {
+export function useWebExtensionStorage(namespace: string) {
   return {
     useStorage<T>(
       key: string,
@@ -166,7 +153,7 @@ export function useWebExtensionStorage(type: string) {
       options: WebExtensionStorageOptions<T> = {}
     ): RemovableRef<T> {
       return createStorage<T>(
-        `${type}.${key}`,
+        `${namespace}.${key}`,
         initialValue,
         options
       )

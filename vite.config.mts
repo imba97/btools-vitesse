@@ -31,9 +31,6 @@ export const sharedConfig: UserConfig = {
           'webextension-polyfill': [
             ['=', 'browser']
           ],
-          'moment': [
-            ['=', 'moment']
-          ],
           'ant-design-vue': [
             'Modal'
           ]
@@ -99,6 +96,7 @@ export default defineConfig(({ command }) => ({
   base: command === 'serve' ? `http://localhost:${port}/` : '/dist/',
   server: {
     port,
+    cors: true,
     hmr: {
       host: 'localhost'
     },

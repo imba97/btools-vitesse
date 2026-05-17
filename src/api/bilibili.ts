@@ -1,5 +1,5 @@
 import type { ReplyParams } from './data/bilibili.data'
-import md5 from 'md5'
+import { md5 } from 'js-md5'
 import { apiStorage } from '~/storages/api'
 import { useRequest } from './request'
 

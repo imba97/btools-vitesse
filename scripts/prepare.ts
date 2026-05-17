@@ -1,7 +1,7 @@
 // generate stub index.html files for dev entry
 import { execSync } from 'node:child_process'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import chokidar from 'chokidar'
-import fs from 'fs-extra'
 import { isDev, log, port, r } from './utils'
 
 /**
@@ -11,12 +11,12 @@ async function stubIndexHtml() {
   const views = ['options', 'popup']
 
   for (const view of views) {
-    await fs.ensureDir(r(`extension/dist/${view}`))
-    let data = await fs.readFile(r(`src/${view}/index.html`), 'utf-8')
+    await mkdir(r(`extension/dist/${view}`), { recursive: true })
+    let data = await readFile(r(`src/${view}/index.html`), 'utf-8')
     data = data
       .replace('"./main.ts"', `"http://localhost:${port}/${view}/main.ts"`)
       .replace('<div id="app"></div>', '<div id="app">Vite server did not start</div>')
-    await fs.writeFile(r(`extension/dist/${view}/index.html`), data, 'utf-8')
+    await writeFile(r(`extension/dist/${view}/index.html`), data, 'utf-8')
     log('PRE', `stub ${view}`)
   }
 }

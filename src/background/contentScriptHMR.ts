@@ -10,9 +10,20 @@ browser.webNavigation.onCommitted.addListener(({ tabId, frameId, url }) => {
   if (isForbiddenUrl(url))
     return
 
-  // inject the latest scripts
-  browser.tabs.executeScript(tabId, {
-    file: `${isFirefox ? '' : '.'}/dist/contentScripts/index.global.js`,
+  const injectForFirefox = () => browser.tabs.executeScript(tabId, {
+    file: '/dist/contentScripts/index.global.js',
     runAt: 'document_end'
-  }).catch(error => console.error(error))
+  })
+
+  const injectForChromium = () => browser.scripting.executeScript({
+    target: { tabId },
+    files: ['dist/contentScripts/index.global.js']
+  })
+
+  // inject the latest scripts
+  const task = isFirefox
+    ? injectForFirefox()
+    : injectForChromium()
+
+  task.catch(error => console.error(error))
 })

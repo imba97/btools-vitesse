@@ -1,9 +1,5 @@
-import type { Tabs } from 'webextension-polyfill'
-import { onMessage, sendMessage } from 'webext-bridge/background'
-
 import { getCurrentAccount } from './scripts/accounts'
-
-import './scripts/prepare'
+import { refreshWbiIfNeeded } from './scripts/prepare'
 
 // only on dev mode
 if (import.meta.hot) {
@@ -14,46 +10,29 @@ if (import.meta.hot) {
 }
 
 browser.runtime.onInstalled.addListener((): void => {
-  // eslint-disable-next-line no-console
-  console.log('Extension installed')
   getCurrentAccount()
+  void refreshWbiIfNeeded(true)
 })
 
-let previousTabId = 0
-
-// communication example: send previous tab title from background page
-// see shim.d.ts for type declaration
-browser.tabs.onActivated.addListener(async ({ tabId }) => {
-  if (!previousTabId) {
-    previousTabId = tabId
-    return
-  }
-
-  let tab: Tabs.Tab
-
-  try {
-    tab = await browser.tabs.get(previousTabId)
-    previousTabId = tabId
-  }
-  catch {
-    return
-  }
-
-  // eslint-disable-next-line no-console
-  console.log('previous tab', tab)
-  sendMessage('tab-prev', { title: tab.title }, { context: 'content-script', tabId })
+browser.runtime.onStartup.addListener(() => {
+  void refreshWbiIfNeeded()
 })
 
-onMessage('get-current-tab', async () => {
-  try {
-    const tab = await browser.tabs.get(previousTabId)
-    return {
-      title: tab?.title
+const WBI_REFRESH_ALARM = 'btools.refreshWbi'
+const WBI_REFRESH_INTERVAL_MINUTES = 180
+
+if (browser.alarms?.onAlarm) {
+  browser.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === WBI_REFRESH_ALARM) {
+      void refreshWbiIfNeeded(true)
     }
-  }
-  catch {
-    return {
-      title: undefined
-    }
-  }
-})
+  })
+
+  void browser.alarms.clear(WBI_REFRESH_ALARM).finally(() => {
+    browser.alarms.create(WBI_REFRESH_ALARM, {
+      periodInMinutes: WBI_REFRESH_INTERVAL_MINUTES
+    })
+  })
+}
+
+void refreshWbiIfNeeded()

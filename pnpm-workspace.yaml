@@ -1,7 +1,15 @@
-onlyBuiltDependencies:
-  - core-js
-  - esbuild
-  - simple-git-hooks
-  - spawn-sync
-  - unrs-resolver
-  - vue-demi
+shellEmulator: true
+
+trustPolicy: no-downgrade
+
+overrides:
+  chokidar: 5.0.0
+  semver: 7.7.3
+
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  esbuild: true
+  simple-git-hooks: true
+  spawn-sync: true
+  vue-demi: true

@@ -1,10 +1,26 @@
 import type { Manifest } from 'webextension-polyfill'
 import type PkgType from '../package.json'
-import fs from 'fs-extra'
+import { readFile } from 'node:fs/promises'
 import { isDev, isFirefox, port, r } from '../scripts/utils'
 
+const bilibiliMatches = [
+  '*://*.bilibili.com/*',
+  '*://bilibili.com/*'
+]
+
 export async function getManifest() {
-  const pkg = await fs.readJSON(r('package.json')) as typeof PkgType
+  const pkg = JSON.parse(await readFile(r('package.json'), 'utf-8')) as typeof PkgType
+  const permissions: Manifest.WebExtensionManifest['permissions'] = [
+    'tabs',
+    'storage',
+    'activeTab',
+    'cookies',
+    'alarms'
+  ]
+
+  if (!isFirefox) {
+    permissions.push('scripting')
+  }
 
   // update this file to update this manifest.json
   // can also be conditional based on your need
@@ -34,19 +50,11 @@ export async function getManifest() {
       48: './assets/logo.png',
       128: './assets/logo.png'
     },
-    permissions: [
-      'tabs',
-      'storage',
-      'webRequest',
-      'activeTab',
-      'cookies'
-    ],
-    host_permissions: ['*://*/*'],
+    permissions,
+    host_permissions: bilibiliMatches,
     content_scripts: [
       {
-        matches: [
-          '<all_urls>'
-        ],
+        matches: bilibiliMatches,
         js: [
           'dist/contentScripts/index.global.js'
         ]
@@ -57,7 +65,7 @@ export async function getManifest() {
         resources: [
           'dist/contentScripts/*.css'
         ],
-        matches: ['<all_urls>']
+        matches: bilibiliMatches
       }
     ],
     content_security_policy: {

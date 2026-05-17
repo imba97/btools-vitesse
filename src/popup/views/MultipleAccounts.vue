@@ -66,6 +66,7 @@
 
 <script lang="ts" setup>
 import type { Account } from '~/storages/multipleAccounts'
+import dayjs from 'dayjs'
 import { configStorage } from '~/storages/config'
 import { multipleAccountsStorage } from '~/storages/multipleAccounts'
 
@@ -92,7 +93,7 @@ async function setCookies(account?: Account) {
       cookie = {
         url: 'https://bilibili.com',
         domain: '.bilibili.com',
-        expirationDate: moment().add(180, 'days').valueOf() / 1000,
+        expirationDate: dayjs().add(180, 'days').valueOf() / 1000,
         httpOnly: key === 'SESSDATA',
         name: key,
         path: '/',

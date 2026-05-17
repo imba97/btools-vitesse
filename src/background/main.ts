@@ -1,3 +1,4 @@
+import { registerPageWorldBus } from './page-world-bus'
 import { getCurrentAccount } from './scripts/accounts'
 import { refreshWbiIfNeeded } from './scripts/prepare'
 
@@ -36,3 +37,4 @@ if (browser.alarms?.onAlarm) {
 }
 
 void refreshWbiIfNeeded()
+registerPageWorldBus()

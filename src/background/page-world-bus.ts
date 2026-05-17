@@ -76,9 +76,14 @@ async function handleRequest(
 export function registerPageWorldBus() {
   if (initialized)
     return
+
+  const addListener = (browser as any)?.runtime?.onMessage?.addListener
+  if (typeof addListener !== 'function')
+    return
+
   initialized = true
 
-  browser.runtime.onMessage.addListener((message: unknown, sender: any) => {
+  addListener((message: unknown, sender: any) => {
     if (!isRequestMessage(message))
       return undefined
 

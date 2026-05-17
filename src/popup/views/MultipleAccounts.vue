@@ -33,22 +33,22 @@
         </div>
 
         <div flex gap-2>
-          <AntButton type="primary" :disabled="isCurrentAccount(account)" @click="changeAccount(account)">
+          <AntButton type="primary" :disabled="isSwitching || isCurrentAccount(account)" @click="changeAccount(account)">
             切换
           </AntButton>
 
           <AntDropdown trigger="click">
-            <AntButton secondary @click="selectedAccount = account">
+            <AntButton secondary :disabled="isSwitching" @click="selectedAccount = account">
               更多
             </AntButton>
 
             <template #overlay>
               <AntMenu>
-                <AntMenuItem :disabled="!isCurrentAccount(account)" @click="leaveAccount">
+                <AntMenuItem :disabled="isSwitching || !isCurrentAccount(account)" @click="leaveAccount">
                   暂离
                 </AntMenuItem>
 
-                <AntMenuItem @click="removeAccount">
+                <AntMenuItem :disabled="isSwitching" @click="removeAccount">
                   <span size-full text-red-6>
                     删除
                   </span>
@@ -66,13 +66,14 @@
 
 <script lang="ts" setup>
 import type { Account } from '~/storages/multipleAccounts'
-import dayjs from 'dayjs'
 import { configStorage } from '~/storages/config'
 import { multipleAccountsStorage } from '~/storages/multipleAccounts'
+import { createAccountCookieSwitcher, setBilibiliAccountCookies } from '../utils/accountCookies'
 
 const [modal, ContextHolder] = Modal.useModal()
 
 const selectedAccount = ref<Account | null>(null)
+const isSwitching = ref(false)
 
 const accountsList = computed(() => multipleAccountsStorage.accounts.value)
 
@@ -80,48 +81,16 @@ function isCurrentAccount(account: Account) {
   return account.DedeUserID === multipleAccountsStorage.currentAccount.value
 }
 
-async function setCookies(account?: Account) {
-  const cookies = await browser.cookies
-    .getAll({
-      domain: '.bilibili.com'
-    })
-
-  _forEach(['SESSDATA', 'bili_jct', 'DedeUserID', 'DedeUserID__ckMd5'], (key: keyof Account) => {
-    let cookie: any = _find(cookies, { name: key })
-
-    if (!cookie) {
-      cookie = {
-        url: 'https://bilibili.com',
-        domain: '.bilibili.com',
-        expirationDate: dayjs().add(180, 'days').valueOf() / 1000,
-        httpOnly: key === 'SESSDATA',
-        name: key,
-        path: '/',
-        sameSite: 'unspecified',
-        secure: false,
-        storeId: '0',
-        value: ''
-      }
-    }
-
-    cookie.value = _get(account, key, '')
-
-    browser.cookies.set({
-      url: 'https://bilibili.com',
-      domain: cookie.domain,
-      expirationDate: cookie.expirationDate,
-      httpOnly: cookie.httpOnly,
-      name: cookie.name,
-      path: cookie.path,
-      sameSite: cookie.sameSite,
-      secure: cookie.secure,
-      storeId: cookie.storeId,
-      value: cookie.value
-    })
-  })
-}
+const accountCookieSwitcher = createAccountCookieSwitcher({
+  writeCookies: setBilibiliAccountCookies,
+  setCurrentAccount: DedeUserID => (multipleAccountsStorage.currentAccount.value = DedeUserID),
+  onSwitchingChange: value => (isSwitching.value = value)
+})
 
 async function changeAccount(account: Account) {
+  if (isSwitching.value)
+    return
+
   if (configStorage.accountChangeConfirm.value) {
     await promisifyModal(
       modal.confirm({
@@ -131,12 +100,13 @@ async function changeAccount(account: Account) {
     )
   }
 
-  await setCookies(account)
-
-  multipleAccountsStorage.currentAccount.value = account.DedeUserID
+  await accountCookieSwitcher.changeAccount(account)
 }
 
 async function removeAccount() {
+  if (isSwitching.value)
+    return
+
   if (!selectedAccount.value) {
     return
   }
@@ -155,8 +125,10 @@ async function removeAccount() {
 }
 
 // 暂离
-function leaveAccount() {
-  setCookies()
-  multipleAccountsStorage.currentAccount.value = ''
+async function leaveAccount() {
+  if (isSwitching.value)
+    return
+
+  await accountCookieSwitcher.leaveAccount()
 }
 </script>

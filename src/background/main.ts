@@ -1,4 +1,3 @@
-import { registerPageWorldBus } from './page-world-bus'
 import { getCurrentAccount } from './scripts/accounts'
 import { registerFavoritesRecoveryCacheCleanup } from './scripts/cache-cleanup'
 import { registerExtraFetch } from './scripts/extra-fetch'
@@ -57,7 +56,6 @@ if (browser.alarms?.onAlarm) {
 }
 
 void refreshWbiIfNeeded()
-registerPageWorldBus()
 registerExtraFetch()
 registerFavoritesRecoveryCacheCleanup()
 registerPingHandler()

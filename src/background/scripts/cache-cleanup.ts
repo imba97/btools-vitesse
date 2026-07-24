@@ -39,14 +39,10 @@ export async function runFavoritesRecoveryCacheCleanup(): Promise<void> {
 
     if (removed > 0) {
       await extStorage.local.set({ [STORAGE_KEY]: next })
-      console.log(`[btools:cache-cleanup] removed ${removed} expired entries, kept ${Object.keys(next).length}`)
-    }
-    else {
-      console.log('[btools:cache-cleanup] no expired entries')
     }
   }
-  catch (err) {
-    console.warn('[btools:cache-cleanup] failed', err)
+  catch {
+    // 静默清理失败
   }
 }
 

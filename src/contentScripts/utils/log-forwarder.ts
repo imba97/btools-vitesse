@@ -13,16 +13,6 @@ import {
 
 let connected = false
 
-function relay(level: string, args: unknown[]): void {
-  const tag = `[btools:bg:${level}]`
-  if (level === 'warn')
-    console.warn(tag, ...args)
-  else if (level === 'error')
-    console.error(tag, ...args)
-  // eslint-disable-next-line no-console
-  else console.log(tag, ...args)
-}
-
 export function startLogForwarder(): () => void {
   const api = (browser as any)?.runtime
   if (!api?.connect)
@@ -38,13 +28,6 @@ export function startLogForwarder(): () => void {
     try {
       port = api.connect({ name: LOG_FORWARDER_PORT_NAME }) as typeof port
       connected = true
-      port!.onMessage.addListener((msg: unknown) => {
-        const m = msg as { __btools_log?: boolean, level?: string, args?: unknown[], type?: string }
-        if (m.__btools_log && m.level && Array.isArray(m.args))
-          relay(m.level, m.args)
-        else if (m.type === PONG_MESSAGE_TYPE)
-          console.warn('[btools:bg] pong', m)
-      })
       port!.onDisconnect.addListener(() => {
         connected = false
         port = undefined
@@ -52,7 +35,6 @@ export function startLogForwarder(): () => void {
           reconnectTimer = setTimeout(connect, 1000)
         }
       })
-      console.warn('[btools:bg] forwarder connected')
     }
     catch {
       connected = false

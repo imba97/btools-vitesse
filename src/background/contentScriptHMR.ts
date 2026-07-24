@@ -25,5 +25,5 @@ browser.webNavigation.onCommitted.addListener(({ tabId, frameId, url }) => {
     ? injectForFirefox()
     : injectForChromium()
 
-  task.catch(error => console.error(error))
+  task.catch(() => {})
 })

@@ -25,10 +25,9 @@ export async function refreshWbiIfNeeded(force = false) {
       }
       return true
     }
-    catch (error) {
+    catch {
       const isLastAttempt = attempt === WBI_MAX_RETRIES
       if (isLastAttempt) {
-        console.error('[background] failed to refresh WBI keys', error)
         return false
       }
 

@@ -16,18 +16,9 @@ if (import.meta.hot) {
 // 放在最前 + log forwarder 也最先注册，这样这条日志一定能从页面 console 看到，
 // 用来确认 worker 在跑。
 registerLogForwarder()
-console.warn('[btools:bg] worker up', { id: browser.runtime?.id })
 
-// 捕获未处理的错误（启动期异常会被静音）
-// 注意：必须用 globalThis.onerror = ... 而非解构 addEventListener，
-// bundler 可能解构后丢失 this 抛 Illegal invocation
-globalThis.onerror = (msg, source, lineno, colno, error) => {
-  console.error('[btools:bg] uncaught error', msg, `${lineno}:${colno}`, error)
-  return false
-}
-globalThis.onunhandledrejection = (e: PromiseRejectionEvent) => {
-  console.error('[btools:bg] unhandled rejection', e.reason)
-}
+globalThis.onerror = () => false
+globalThis.onunhandledrejection = () => {}
 
 browser.runtime.onInstalled.addListener((): void => {
   getCurrentAccount()

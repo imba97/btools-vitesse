@@ -50,13 +50,5 @@ export async function getCurrentAccount() {
         DedeUserID__ckMd5: accountCookie.DedeUserID__ckMd5!
       })
     }
-    else {
-      // eslint-disable-next-line no-console
-      console.log('account', account)
-    }
-  }
-  else {
-    // eslint-disable-next-line no-console
-    console.log('未登录')
   }
 }

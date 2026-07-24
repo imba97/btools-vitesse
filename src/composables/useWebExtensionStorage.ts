@@ -63,9 +63,7 @@ function createStorage<T>(
     writeDefaults = true,
     shallow,
     eventFilter,
-    onError = (e: unknown) => {
-      console.error(e)
-    }
+    onError = () => {}
   } = options
 
   const rawInit: T = toValue(initialValue)

@@ -19,21 +19,13 @@ export function registerExtraFetch() {
   if (!api?.onMessage?.addListener)
     return
 
-  console.log('[btools:extra-fetch] listener registered')
-
   api.onMessage.addListener((message: unknown, _sender: any, sendResponse: (resp: unknown) => void) => {
-    // 任何消息都打日志（调试用 —— 如果这里都不出现，说明消息根本没到 bg）
-    const m = message as { type?: string, url?: string } | null | undefined
-    console.log('[btools:extra-fetch] msg recv type=', m?.type, 'url=', m?.url)
-
     if (!message || typeof message !== 'object' || (message as any).type !== 'btools:extra-fetch')
       return false
 
     const url = (message as FetchRequest).url
-    console.log('[btools:extra-fetch] req →', url)
 
     void (async () => {
-      const startedAt = Date.now()
       try {
         const r = await fetch(url, {
           method: 'GET',
@@ -41,14 +33,10 @@ export function registerExtraFetch() {
           redirect: 'follow'
         })
         const body = await r.text()
-        const elapsed = Date.now() - startedAt
-        console.log('[btools:extra-fetch] resp', r.status, url, 'bodyLen=', body.length, `(${elapsed}ms)`)
         const resp: FetchResponse = { ok: r.ok, status: r.status, body }
         sendResponse(resp)
       }
       catch (err) {
-        const elapsed = Date.now() - startedAt
-        console.warn('[btools:extra-fetch] failed', url, `(${elapsed}ms)`, err)
         const resp: FetchResponse = {
           ok: false,
           status: 0,

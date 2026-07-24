@@ -13,8 +13,6 @@ interface FetchResponse {
 }
 
 export async function extraFetch(url: string): Promise<string> {
-  const startedAt = Date.now()
-  console.warn('[btools:extra-fetch:cs] →', url)
   // sendMessage 在 background 没装好 / worker 没 wakeup 时会一直挂 —— 加超时兜底
   let timer: ReturnType<typeof setTimeout> | undefined
   const timeout = new Promise<never>((_, reject) => {
@@ -36,15 +34,11 @@ export async function extraFetch(url: string): Promise<string> {
       clearTimeout(timer)
   }
 
-  const elapsed = Date.now() - startedAt
   if (!res) {
-    console.warn('[btools:extra-fetch:cs] empty', url, `(${elapsed}ms)`)
     throw new Error('empty response from background')
   }
   if (!res.ok) {
-    console.warn('[btools:extra-fetch:cs] !ok', url, `status=${res.status}`, `(${elapsed}ms)`)
     throw new Error(res.error || `background fetch failed: status ${res.status}`)
   }
-  console.warn('[btools:extra-fetch:cs] ✓', url, `status=${res.status} bodyLen=${res.body.length}`, `(${elapsed}ms)`)
   return res.body
 }

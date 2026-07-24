@@ -70,8 +70,9 @@ describe('background main integration', () => {
   })
 
   it('registers startup and alarm behaviors', async () => {
-    expect(runtimeOnInstalledListeners).toHaveLength(1)
-    expect(runtimeOnStartupListeners).toHaveLength(1)
+    // main.ts 注册 1 个 + cache-cleanup.ts 注册 1 个
+    expect(runtimeOnInstalledListeners).toHaveLength(2)
+    expect(runtimeOnStartupListeners).toHaveLength(2)
     expect(alarmsOnAlarmListeners).toHaveLength(1)
 
     runtimeOnInstalledListeners[0]?.()

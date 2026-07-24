@@ -1,4 +1,4 @@
-import type { ReplyParams } from './data/bilibili.data'
+import type { ReplyParams, VideoViewParams, VideoViewResponse } from './data/bilibili.data'
 import { md5 } from 'js-md5'
 import { apiStorage } from '~/storages/api'
 import { useRequest } from './request'
@@ -19,6 +19,13 @@ export default class BilibiliApi {
   static getReply(params: ReplyParams) {
     return request.get('/v2/reply/wbi/main', withWbi(params))
   }
+
+  static getVideoInfo(params: VideoViewParams) {
+    return request.get<VideoViewResponse>('/web-interface/view', params)
+  }
+
+  // 注：biliplus 等非 api.bilibili.com 的镜像源不在这里，因为
+  // content script 受 CORS 约束，需要走 background 中转（见 src/contentScripts/utils/bilibili-extra.ts）
 }
 
 const mixinKeyEncTab = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11, 36, 20, 34, 44, 52]

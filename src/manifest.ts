@@ -5,7 +5,9 @@ import { isDev, isFirefox, port, r } from '../scripts/utils'
 
 const bilibiliMatches = [
   '*://*.bilibili.com/*',
-  '*://bilibili.com/*'
+  '*://bilibili.com/*',
+  // 失效视频恢复：通过 biliplus 取真实视频信息（apiStorage 缓存）
+  '*://*.biliplus.com/*'
 ]
 
 export async function getManifest() {

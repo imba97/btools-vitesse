@@ -77,13 +77,15 @@ export function registerPageWorldBus() {
   if (initialized)
     return
 
-  const addListener = (browser as any)?.runtime?.onMessage?.addListener
-  if (typeof addListener !== 'function')
+  // 注意：必须以 method-call 形式调 addListener，不能先解构再调；
+  // 否则 this 丢失，Chrome Event 原型方法会抛 Illegal invocation。
+  const onMessage = (browser as any)?.runtime?.onMessage
+  if (typeof onMessage?.addListener !== 'function')
     return
 
   initialized = true
 
-  addListener((message: unknown, sender: any) => {
+  onMessage.addListener((message: unknown, sender: any) => {
     if (!isRequestMessage(message))
       return undefined
 

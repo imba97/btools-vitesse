@@ -28,7 +28,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "postinstall": "simple-git-hooks",
-    "typecheck": "pnpm exec tsc --noEmit"
+    "typecheck": "pnpm exec tsc --noEmit",
+    "release": "bumpp"
   },
   "dependencies": {
     "@vueuse/shared": "^14.3.0",
@@ -50,6 +51,7 @@
     "@vue/compiler-sfc": "^3.5.40",
     "@vue/test-utils": "^2.4.11",
     "@vueuse/core": "^14.3.0",
+    "bumpp": "^12.0.0",
     "chokidar": "^5.0.0",
     "cross-env": "^10.1.0",
     "crx3": "^2.0.0",

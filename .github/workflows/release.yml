@@ -11,14 +11,15 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
@@ -26,8 +27,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint, typecheck & test
-        run: pnpm run lint && pnpm run typecheck && pnpm run test:coverage
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Test
+        run: pnpm run test:coverage
 
       - name: Build
         run: pnpm run build
@@ -57,15 +64,15 @@ jobs:
           REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
         run: npx --yes chrome-webstore-upload-cli@latest publish
 
-      # NOTE: To also publish to addons.mozilla.org (Firefox), append a
-      # `web-ext sign` step here with WEB_EXT_API_KEY / WEB_EXT_API_SECRET
-      # secrets. See the project README for the snippet.
+      # 3) Generate / update CHANGELOG.md from conventional commits, commit it
+      # back, and create the GitHub Release with the changelog as the body.
+      - name: Generate changelog & release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx changelogithub@latest
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-          files: |
-            extension.zip
-            extension.crx
-            extension.xpi
+      # 4) Attach the built artifacts to the release created above.
+      - name: Attach artifacts to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" extension.zip extension.crx extension.xpi --clobber

@@ -80,6 +80,6 @@
     "pre-commit": "pnpm nano-staged"
   },
   "nano-staged": {
-    "*": "eslint --fix"
+    "*.{js,jsx,ts,tsx,mjs,cjs,vue,json,jsonc,json5,md,css,scss,less,html}": "eslint --fix"
   }
 }

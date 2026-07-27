@@ -27,6 +27,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Build must run before typecheck/lint/test: `unplugin-auto-import` and
+      # `unplugin-vue-components` write .auto-imports/*.d.ts during `vite build`,
+      # and those files are git-ignored so tsc would otherwise see unresolved
+      # globals (browser, Ref, computed, toValue, _forEach, ...).
+      - name: Build
+        run: pnpm run build
+
       - name: Lint
         run: pnpm run lint
 
@@ -35,9 +42,6 @@ jobs:
 
       - name: Test
         run: pnpm run test:coverage
-
-      - name: Build
-        run: pnpm run build
 
       - name: Pack Chrome / Firefox artifacts
         run: pnpm run pack

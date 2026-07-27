@@ -1,40 +1,16 @@
-// generate stub index.html files for dev entry
-import { execSync } from 'node:child_process'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import chokidar from 'chokidar'
-import { isDev, log, port, r } from './utils'
+import { writeManifest } from './manifest'
+// build-only entry: regenerate extension/manifest.json from src/manifest.ts.
+// Must not write to extension/dist/{popup,options}/index.html — that output
+// belongs to `vite build` and the dev stub lives in scripts/dev-prepare.ts.
+import { isDev, log } from './utils'
 
-/**
- * Stub index.html to use Vite in development
- */
-async function stubIndexHtml() {
-  const views = ['options', 'popup']
-
-  for (const view of views) {
-    await mkdir(r(`extension/dist/${view}`), { recursive: true })
-    let data = await readFile(r(`src/${view}/index.html`), 'utf-8')
-    data = data
-      .replace('"./main.ts"', `"http://localhost:${port}/${view}/main.ts"`)
-      .replace('<div id="app"></div>', '<div id="app">Vite server did not start</div>')
-    await writeFile(r(`extension/dist/${view}/index.html`), data, 'utf-8')
-    log('PRE', `stub ${view}`)
-  }
-}
-
-function writeManifest() {
-  execSync('npx esno ./scripts/manifest.ts', { stdio: 'inherit' })
+if (isDev) {
+  // `pnpm run build:prepare` should never run in dev mode. The dev stub
+  // lives in scripts/dev-prepare.ts and is wired to `dev:prepare` in
+  // package.json. Warn loudly so any accidental misuse is visible, but
+  // still allow the manifest to be written so cross-env misconfigurations
+  // don't block the build chain entirely.
+  log('PRE', 'warning: build:prepare invoked with NODE_ENV!=production')
 }
 
 writeManifest()
-
-if (isDev) {
-  stubIndexHtml()
-  chokidar.watch(r('src/**/*.html'))
-    .on('change', () => {
-      stubIndexHtml()
-    })
-  chokidar.watch([r('src/manifest.ts'), r('package.json')])
-    .on('change', () => {
-      writeManifest()
-    })
-}

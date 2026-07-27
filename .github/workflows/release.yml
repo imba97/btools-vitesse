@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint, typecheck & test
+        run: pnpm run lint && pnpm run typecheck && pnpm run test:coverage
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Pack Chrome / Firefox artifacts
+        run: pnpm run pack
+
+      # 1) Upload the zip to the Chrome Web Store (draft state, no live rollout yet).
+      # The very first publish of a new item MUST be done manually via the CWS
+      # dashboard; the API only accepts updates after that.
+      - name: Upload to Chrome Web Store
+        env:
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+          PUBLISHER_ID: ${{ secrets.PUBLISHER_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+        run: npx --yes chrome-webstore-upload-cli@latest upload --source extension.zip --auto-publish=false
+
+      # 2) Publish the uploaded package (triggers review if needed).
+      - name: Publish on Chrome Web Store
+        env:
+          EXTENSION_ID: ${{ secrets.EXTENSION_ID }}
+          PUBLISHER_ID: ${{ secrets.PUBLISHER_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+        run: npx --yes chrome-webstore-upload-cli@latest publish
+
+      # NOTE: To also publish to addons.mozilla.org (Firefox), append a
+      # `web-ext sign` step here with WEB_EXT_API_KEY / WEB_EXT_API_SECRET
+      # secrets. See the project README for the snippet.
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            extension.zip
+            extension.crx
+            extension.xpi

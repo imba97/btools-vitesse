@@ -1,6 +1,10 @@
 import antfu from '@antfu/eslint-config'
 
 export default antfu({
+  ignores: [
+    '.github',
+    '**/*.yaml'
+  ],
   rules: {
     'style/comma-dangle': ['warn', 'never']
   },

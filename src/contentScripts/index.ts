@@ -27,7 +27,18 @@ injectPageStyles()
   styleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/btools-vitesse.css'))
   shadowDOM.appendChild(styleEl)
   shadowDOM.appendChild(root)
-  document.body.appendChild(container)
+  // 同一份 CSS 也挂到 main <head>：bar 是 Teleport 到 B 站 main DOM 的（host 与 arc_toolbar_report 同父自然同宽），
+  // 那里走不到 shadow root 的 <link>。注：bundle 里和 B 站用到的 utility class（如 .absolute）值完全相同，
+  // 重复加载不会带来行为变化，只是多一份 cache。
+  const mainStyleEl = document.createElement('link')
+  mainStyleEl.setAttribute('rel', 'stylesheet')
+  mainStyleEl.setAttribute('href', browser.runtime.getURL('dist/contentScripts/btools-vitesse.css'))
+  document.head.appendChild(mainStyleEl)
+  // 插到 body 最前面（所有 B 站内容之前），保证视觉位置在页面顶部、压住 fixed header
+  document.body.insertBefore(container, document.body.firstChild)
+  // closed shadow 下，element.shadowRoot 在外部 Realm 访问会返回 null；
+  // 把引用挂到 globalThis 让同 Realm 的其他模块（比如 video-toolbar.vue）能拿到
+  ;(globalThis as Record<string, unknown>)[`__${__NAME__}_shadow`] = shadowDOM
   const app = createApp(App)
   setupApp(app)
   app.mount(root)

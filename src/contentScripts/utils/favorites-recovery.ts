@@ -1,8 +1,12 @@
 import type { VideoViewData } from '~/api/data/bilibili.data'
+import { extractBvid, toHttps } from './bilibili-url'
+
+// BV 号 / URL / 图片地址相关的纯函数统一放在 bilibili-url.ts（播放页工具栏也要用），
+// 这里 re-export 保持旧调用方（含单测）不变
+export { extractBvid, toHttps } from './bilibili-url'
 
 export const TARGET_HOSTNAME = 'space.bilibili.com'
 export const FAVLIST_PATH_RE = /^\/[^/]+\/favlist(?:\/|$)/
-export const BV_PATH_RE = /\/video\/(BV[0-9A-Za-z]{10})(?:\/|$)/
 
 // B 站对失效视频封面 img 的 alt 占位文案，精确匹配避免误伤
 export const INVALID_PLACEHOLDERS = new Set(['已失效视频', '已删除视频', '视频已失效'])
@@ -13,28 +17,6 @@ export const TITLE_ANCHOR_SELECTORS = [
   '.bili-video-card__title > a',
   '.title > a'
 ]
-
-export function toHttps(url: string): string {
-  if (url.startsWith('//'))
-    return `https:${url}`
-  if (url.startsWith('http://'))
-    return `https://${url.slice(7)}`
-  return url
-}
-
-export function extractBvid(href: string | null | undefined): string | null {
-  if (!href)
-    return null
-  let url: URL
-  try {
-    url = new URL(href, location.href)
-  }
-  catch {
-    return null
-  }
-  const m = url.pathname.match(BV_PATH_RE)
-  return m ? m[1] : null
-}
 
 export function isTargetPage(): boolean {
   return location.hostname === TARGET_HOSTNAME && FAVLIST_PATH_RE.test(location.pathname)

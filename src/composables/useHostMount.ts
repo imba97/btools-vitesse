@@ -1,3 +1,4 @@
+import type { ShallowRef } from 'vue'
 import { onUnmounted, shallowRef } from 'vue'
 
 export interface UseHostMountReturn {
@@ -6,7 +7,7 @@ export interface UseHostMountReturn {
    *
    * null 时表示 host 尚未挂载或已被外部代码移除。
    */
-  hostEl: Readonly<typeof hostEl>
+  hostEl: Readonly<ShallowRef<HTMLElement | null>>
   /**
    * 把 host 插入 `toolbarSelector` 命中的元素的**前一个 sibling** 位置。
    *

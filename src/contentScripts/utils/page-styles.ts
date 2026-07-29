@@ -61,6 +61,12 @@ const CSS_TEXT = `
   vertical-align: text-bottom;
 }
 
+/* Btools bar 挂在 body 下，不能作为 B 站 Vue 工具栏的 sibling。
+   为原工具栏预留等高空间，使绝对定位的 bar 不会遮住页面控件。 */
+#arc_toolbar_report {
+  margin-top: 32px !important;
+}
+
 .btools-toolbar-host {
   box-sizing: border-box;
   display: flex;

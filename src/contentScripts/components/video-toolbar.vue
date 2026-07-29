@@ -30,7 +30,7 @@ import VideoToolbarBar from './video-toolbar/bar.vue'
   B 站视频页扩展 bar（headless 父组件）。
 
   这里只做「装载 + 状态机」的工作：
-  - 找到 #arc_toolbar_report，并在它**前一个 sibling** 位置创建 host div；
+  - 找到 #arc_toolbar_report，并把 body 中的扩展 host 定位在它上方；
   - 维护 collapsed / coverUrl / status 等响应式状态；
   - MO 兜底恢复 host 位置；
   - 用 <Teleport> 把 VideoToolbarBar 渲染到 host 里。
@@ -53,7 +53,7 @@ const HOST_ID = 'btools-bar-host'
 const HOST_CLASS = 'btools-toolbar-host'
 const pageRuntime = useContentPageRuntime()
 
-// —— host 元素（B 站 light tree 里，arc_toolbar_report 前一个 sibling） ——
+// —— host 元素（body 直属，避免进入 B 站 Vue 管理的子节点列表） ——
 const { hostEl, mount: mountHost, unmount: unmountHost } = useHostMount(
   '#arc_toolbar_report',
   { id: HOST_ID, className: HOST_CLASS }
@@ -141,6 +141,8 @@ watch(
 
 onMounted(() => {
   mountHost()
+  window.addEventListener('resize', mountHost)
+  window.addEventListener('scroll', mountHost, true)
   stopDomSubscription = pageRuntime.onDomChanged(() => {
     if (disposed)
       return
@@ -149,16 +151,14 @@ onMounted(() => {
       unmountHost()
       return
     }
-    const inPlace = !!hostEl.value
-      && hostEl.value.parentElement === toolbar.parentElement
-      && hostEl.value.nextElementSibling === toolbar
-    if (!inPlace)
-      mountHost()
+    mountHost()
   })
 })
 
 onUnmounted(() => {
   disposed = true
   stopDomSubscription?.()
+  window.removeEventListener('resize', mountHost)
+  window.removeEventListener('scroll', mountHost, true)
 })
 </script>

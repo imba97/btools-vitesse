@@ -1,17 +1,14 @@
 // 没有顶层 import（mock 需要在动态 import 之前生效），显式声明成模块避免全局作用域重名
 export {}
 
-const storageState: Record<string, string> = {}
-const storageListeners: Array<(changes: Record<string, { newValue: string | null }>) => void> = []
+const storageState: Record<string, unknown> = {}
+const storageListeners: Array<(changes: Record<string, { newValue: unknown }>, areaName: string) => void> = []
 
 vi.mock('webextension-polyfill', () => {
   return {
     storage: {
       local: {
-        remove: vi.fn(async (key: string) => {
-          delete storageState[key]
-        }),
-        set: vi.fn(async (value: Record<string, string>) => {
+        set: vi.fn(async (value: Record<string, unknown>) => {
           Object.assign(storageState, value)
         }),
         get: vi.fn(async (key: string) => {
@@ -19,10 +16,10 @@ vi.mock('webextension-polyfill', () => {
         })
       },
       onChanged: {
-        addListener: vi.fn((listener: (changes: Record<string, { newValue: string | null }>) => void) => {
+        addListener: vi.fn((listener: (changes: Record<string, { newValue: unknown }>, areaName: string) => void) => {
           storageListeners.push(listener)
         }),
-        removeListener: vi.fn((listener: (changes: Record<string, { newValue: string | null }>) => void) => {
+        removeListener: vi.fn((listener: (changes: Record<string, { newValue: unknown }>, areaName: string) => void) => {
           const index = storageListeners.indexOf(listener)
           if (index >= 0)
             storageListeners.splice(index, 1)
@@ -62,7 +59,7 @@ describe('usePanelCollapse', () => {
     expect(collapsed.value).toBe(false)
 
     await vi.waitFor(() => {
-      expect(JSON.parse(storageState['panel.collapsed'])).toEqual({ 'video-toolbar': false })
+      expect(storageState['panel.collapsed']).toEqual({ 'video-toolbar': false })
     })
   })
 
@@ -88,7 +85,7 @@ describe('usePanelCollapse', () => {
     expect(second.collapsed.value).toBe(true)
 
     await vi.waitFor(() => {
-      expect(JSON.parse(storageState['panel.collapsed'])).toEqual({ 'panel-a': false })
+      expect(storageState['panel.collapsed']).toEqual({ 'panel-a': false })
     })
   })
 })

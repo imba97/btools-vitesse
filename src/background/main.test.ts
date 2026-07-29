@@ -1,5 +1,6 @@
 const runtimeOnInstalledListeners: Array<() => void> = []
 const runtimeOnStartupListeners: Array<() => void> = []
+const runtimeOnMessageListeners: Array<(message: unknown, sender: unknown) => unknown> = []
 const alarmsOnAlarmListeners: Array<(alarm: { name: string }) => void> = []
 
 const getCurrentAccount = vi.fn()
@@ -8,11 +9,15 @@ const refreshWbiIfNeeded = vi.fn(async () => true)
 vi.mock('webextension-polyfill', () => {
   const browser = {
     runtime: {
+      id: 'test-extension',
       onInstalled: {
         addListener: (listener: () => void) => runtimeOnInstalledListeners.push(listener)
       },
       onStartup: {
         addListener: (listener: () => void) => runtimeOnStartupListeners.push(listener)
+      },
+      onMessage: {
+        addListener: (listener: (message: unknown, sender: unknown) => unknown) => runtimeOnMessageListeners.push(listener)
       }
     },
     tabs: {},
@@ -64,6 +69,7 @@ describe('background main integration', () => {
 
     runtimeOnInstalledListeners.splice(0, runtimeOnInstalledListeners.length)
     runtimeOnStartupListeners.splice(0, runtimeOnStartupListeners.length)
+    runtimeOnMessageListeners.splice(0, runtimeOnMessageListeners.length)
     alarmsOnAlarmListeners.splice(0, alarmsOnAlarmListeners.length)
 
     await import('./main')
@@ -73,6 +79,7 @@ describe('background main integration', () => {
     // main.ts 注册 1 个 + cache-cleanup.ts 注册 1 个
     expect(runtimeOnInstalledListeners).toHaveLength(2)
     expect(runtimeOnStartupListeners).toHaveLength(2)
+    expect(runtimeOnMessageListeners).toHaveLength(1)
     expect(alarmsOnAlarmListeners).toHaveLength(1)
 
     runtimeOnInstalledListeners[0]?.()

@@ -75,15 +75,15 @@ const [modal, ContextHolder] = Modal.useModal()
 const selectedAccount = ref<Account | null>(null)
 const isSwitching = ref(false)
 
-const accountsList = computed(() => multipleAccountsStorage.accounts.value)
+const accountsList = computed(() => multipleAccountsStorage.accounts.value.value)
 
 function isCurrentAccount(account: Account) {
-  return account.DedeUserID === multipleAccountsStorage.currentAccount.value
+  return account.DedeUserID === multipleAccountsStorage.currentAccount.value.value
 }
 
 const accountCookieSwitcher = createAccountCookieSwitcher({
   writeCookies: setBilibiliAccountCookies,
-  setCurrentAccount: DedeUserID => (multipleAccountsStorage.currentAccount.value = DedeUserID),
+  setCurrentAccount: DedeUserID => void multipleAccountsStorage.currentAccount.set(DedeUserID),
   onSwitchingChange: value => (isSwitching.value = value)
 })
 
@@ -91,7 +91,7 @@ async function changeAccount(account: Account) {
   if (isSwitching.value)
     return
 
-  if (configStorage.accountChangeConfirm.value) {
+  if (configStorage.accountChangeConfirm.value.value) {
     await promisifyModal(
       modal.confirm({
         title: '切换确认',
@@ -119,9 +119,7 @@ async function removeAccount() {
     })
   )
 
-  _remove(multipleAccountsStorage.accounts.value, {
-    DedeUserID: selectedAccount.value.DedeUserID
-  })
+  await multipleAccountsStorage.accounts.update(accounts => accounts.filter(account => account.DedeUserID !== selectedAccount.value?.DedeUserID))
 }
 
 // 暂离

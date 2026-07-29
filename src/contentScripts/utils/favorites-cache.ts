@@ -12,10 +12,8 @@
 import type { VideoViewData } from '~/api/data/bilibili.data'
 import type { CachedVideo } from '~/storages/favorites-recovery'
 import {
-  CACHE_TTL_MS,
-
   favoritesRecoveryStorage,
-  NOT_FOUND_CACHE_TTL_MS
+  isCachedVideoExpired
 } from '~/storages/favorites-recovery'
 import { RateLimiter } from '~/utils/rate-limiter'
 import { getVideoInfoBiliplus } from './bilibili-extra'
@@ -23,20 +21,9 @@ import { getVideoInfoBiliplus } from './bilibili-extra'
 // 单实例 limiter：同一扩展内全局共享
 const limiter = new RateLimiter({ maxConcurrent: 2, intervalMs: 1000 })
 
-function ttlForEntry(entry: CachedVideo): number {
-  return entry.notFound ? NOT_FOUND_CACHE_TTL_MS : CACHE_TTL_MS
-}
-
-function isExpired(entry: CachedVideo, now: number): boolean {
-  return now - entry.cachedAt >= ttlForEntry(entry)
-}
-
 async function readCache(): Promise<Record<string, CachedVideo>> {
-  return favoritesRecoveryStorage.cache.value ?? {}
-}
-
-async function writeCache(next: Record<string, CachedVideo>): Promise<void> {
-  favoritesRecoveryStorage.cache.value = next
+  await favoritesRecoveryStorage.cache.ready
+  return favoritesRecoveryStorage.cache.value.value ?? {}
 }
 
 // 读缓存条目：命中且未过期 → 返回；缺失 / 已过期 → 返回 null（顺手清掉过期条目）
@@ -45,9 +32,11 @@ async function getCacheEntry(bvid: string): Promise<CachedVideo | null> {
   const entry = cache[bvid]
   if (!entry)
     return null
-  if (isExpired(entry, Date.now())) {
-    delete cache[bvid]
-    void writeCache(cache)
+  if (isCachedVideoExpired(entry)) {
+    void favoritesRecoveryStorage.cache.update((current) => {
+      const { [bvid]: _, ...next } = current
+      return next
+    })
     return null
   }
   return entry
@@ -57,9 +46,10 @@ async function setCacheEntry(
   bvid: string,
   fields: Omit<CachedVideo, 'bvid' | 'cachedAt'>
 ): Promise<void> {
-  const cache = await readCache()
-  cache[bvid] = { bvid, cachedAt: Date.now(), ...fields }
-  await writeCache(cache)
+  await favoritesRecoveryStorage.cache.update(cache => ({
+    ...cache,
+    [bvid]: { bvid, cachedAt: Date.now(), ...fields }
+  }))
 }
 
 async function fetchAndCache(bvid: string): Promise<VideoViewData | null> {

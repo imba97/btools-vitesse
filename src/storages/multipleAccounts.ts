@@ -1,4 +1,4 @@
-import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
+import { createStorageRepository } from './repository'
 
 export interface Account {
   name: string
@@ -9,9 +9,7 @@ export interface Account {
   DedeUserID__ckMd5: string
 }
 
-const { useStorage } = useWebExtensionStorage('multipleAccounts')
-
 export const multipleAccountsStorage = {
-  currentAccount: useStorage<string>('currentAccount', ''),
-  accounts: useStorage<Account[]>('accounts', [])
+  currentAccount: createStorageRepository<string>('multipleAccounts.currentAccount', ''),
+  accounts: createStorageRepository<Account[]>('multipleAccounts.accounts', [])
 }

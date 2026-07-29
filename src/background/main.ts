@@ -1,7 +1,6 @@
 import { getCurrentAccount } from './scripts/accounts'
 import { registerFavoritesRecoveryCacheCleanup } from './scripts/cache-cleanup'
-import { registerExtraFetch } from './scripts/extra-fetch'
-import { registerLogForwarder, registerPingHandler } from './scripts/log-forwarder'
+import { registerBackgroundRequestHandler } from './scripts/extra-fetch'
 import { refreshWbiIfNeeded } from './scripts/prepare'
 
 // only on dev mode
@@ -11,14 +10,6 @@ if (import.meta.hot) {
   // load latest content script
   import('./contentScriptHMR')
 }
-
-// 哨兵：每次 bg worker 起来都会跑（包含 MV3 休眠后被唤醒）。
-// 放在最前 + log forwarder 也最先注册，这样这条日志一定能从页面 console 看到，
-// 用来确认 worker 在跑。
-registerLogForwarder()
-
-globalThis.onerror = () => false
-globalThis.onunhandledrejection = () => {}
 
 browser.runtime.onInstalled.addListener((): void => {
   getCurrentAccount()
@@ -47,6 +38,5 @@ if (browser.alarms?.onAlarm) {
 }
 
 void refreshWbiIfNeeded()
-registerExtraFetch()
+registerBackgroundRequestHandler()
 registerFavoritesRecoveryCacheCleanup()
-registerPingHandler()

@@ -18,8 +18,14 @@ export const TITLE_ANCHOR_SELECTORS = [
   '.title > a'
 ]
 
-export function isTargetPage(): boolean {
-  return location.hostname === TARGET_HOSTNAME && FAVLIST_PATH_RE.test(location.pathname)
+export function isTargetPage(href: string = location.href): boolean {
+  try {
+    const url = new URL(href, location.href)
+    return url.hostname === TARGET_HOSTNAME && FAVLIST_PATH_RE.test(url.pathname)
+  }
+  catch {
+    return false
+  }
 }
 
 export function queryAnchor(card: Element): HTMLAnchorElement | null {

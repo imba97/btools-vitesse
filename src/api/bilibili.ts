@@ -1,7 +1,7 @@
 import type { ReplyParams, VideoViewParams, VideoViewResponse } from './data/bilibili.data'
-import { md5 } from 'js-md5'
-import { apiStorage } from '~/storages/api'
 import { useRequest } from './request'
+import { signWbiParams } from './wbi'
+import { ensureWbiKeys } from './wbi-service'
 
 const request = useRequest('https://api.bilibili.com/x')
 
@@ -10,14 +10,14 @@ export default class BilibiliApi {
     return request.get('/web-interface/nav')
   }
 
-  static getUserInfo(mid: number | string) {
-    return request.get('/space/wbi/acc/info', withWbi({
+  static async getUserInfo(mid: number | string) {
+    return request.get('/space/wbi/acc/info', signWbiParams({
       mid
-    }))
+    }, await ensureWbiKeys()))
   }
 
-  static getReply(params: ReplyParams) {
-    return request.get('/v2/reply/wbi/main', withWbi(params))
+  static async getReply(params: ReplyParams) {
+    return request.get('/v2/reply/wbi/main', signWbiParams(params, await ensureWbiKeys()))
   }
 
   static getVideoInfo(params: VideoViewParams) {
@@ -26,35 +26,4 @@ export default class BilibiliApi {
 
   // 注：biliplus 等非 api.bilibili.com 的镜像源不在这里，因为
   // content script 受 CORS 约束，需要走 background 中转（见 src/contentScripts/utils/bilibili-extra.ts）
-}
-
-const mixinKeyEncTab = [46, 47, 18, 2, 53, 8, 23, 32, 15, 50, 10, 31, 58, 3, 45, 35, 27, 43, 5, 49, 33, 9, 42, 19, 29, 28, 14, 39, 12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63, 57, 62, 11, 36, 20, 34, 44, 52]
-
-// 对 imgKey 和 subKey 进行字符顺序打乱编码
-const getMixinKey = (orig: string) => mixinKeyEncTab.map(n => orig[n]).join('').slice(0, 32)
-
-// 为请求参数进行 wbi 签名
-function withWbi(params: Record<string, any>) {
-  const mixin_key = getMixinKey(apiStorage.wbi.value.img_key + apiStorage.wbi.value.sub_key)
-  const curr_time = Math.round(Date.now() / 1000)
-  const chr_filter = /[!'()*]/g
-
-  Object.assign(params, { wts: curr_time }) // 添加 wts 字段
-  // 按照 key 重排参数
-  const query = Object
-    .keys(params)
-    .sort()
-    .map((key) => {
-      // 过滤 value 中的 "!'()*" 字符
-      const value = params[key].toString().replace(chr_filter, '')
-      return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
-    })
-    .join('&')
-
-  // 计算 md5
-  const wbi_sign = md5(query + mixin_key)
-
-  return _assign(params, {
-    w_rid: wbi_sign
-  })
 }

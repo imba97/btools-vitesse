@@ -1,9 +1,9 @@
 <template>
   <div
-    class="btools-toolbar box-border h-full w-full flex items-center justify-end gap-1 py-2"
+    class="btools-toolbar"
   >
     <div
-      class="btools-toolbar__items flex items-center gap-1 overflow-hidden transition-[max-width,opacity] duration-150 ease"
+      class="btools-toolbar__items"
       :class="itemsContainerClass"
       :aria-hidden="collapsed"
     >
@@ -11,7 +11,7 @@
         :is="b.href ? 'a' : 'button'"
         v-for="b in buttons"
         :key="b.key"
-        class="btools-toolbar__btn h-6 w-6 flex flex-none items-center justify-center rounded-md border-none bg-transparent p-0 text-inherit no-underline opacity-75 transition-[background-color,opacity] duration-150 ease hover:bg-[rgba(128,128,128,0.16)] hover:opacity-100"
+        class="btools-toolbar__btn"
         :class="[
           isDisabled(b) ? 'opacity-35 pointer-events-none' : '',
           cursorClass(b)
@@ -33,7 +33,7 @@
 
     <button
       type="button"
-      class="btools-toolbar__btn btools-toolbar__toggle h-6 w-6 flex flex-none cursor-pointer items-center justify-center rounded-md border-none bg-[rgba(128,128,128,0.08)] p-0 text-inherit no-underline opacity-75 transition-[background-color,opacity] duration-150 ease hover:bg-[rgba(128,128,128,0.16)] hover:opacity-100"
+      class="btools-toolbar__btn btools-toolbar__toggle"
       :aria-expanded="!collapsed"
       :title="toggleTitle"
       :aria-label="toggleTitle"
@@ -57,12 +57,16 @@ const emit = defineEmits<{
   toggle: []
 }>()
 
-const CHEVRON_LEFT = 'i-mdi-chevron-left'
-const CHEVRON_RIGHT = 'i-mdi-chevron-right'
-const ICON_SPAN_CLASS = 'inline-block w-[1em] h-[1em]'
+const CHEVRON_LEFT = 'btools-toolbar__icon--chevron-left'
+const CHEVRON_RIGHT = 'btools-toolbar__icon--chevron-right'
+const ICON_SPAN_CLASS = 'btools-toolbar__icon'
 
 function iconClass(b: ToolbarButton): string {
-  return b.loading ? 'i-eos-icons-loading' : b.icon
+  if (b.loading)
+    return 'btools-toolbar__spinner'
+  return b.icon === 'i-mdi-image-outline'
+    ? 'btools-toolbar__icon--image'
+    : b.icon
 }
 
 function isDisabled(b: ToolbarButton): boolean {
@@ -82,8 +86,8 @@ function cursorClass(b: ToolbarButton): string {
 
 const itemsContainerClass = computed(() =>
   props.collapsed
-    ? 'max-w-0 opacity-0 pointer-events-none'
-    : 'max-w-[320px] opacity-100'
+    ? 'is-collapsed'
+    : ''
 )
 
 function onItemClick(b: ToolbarButton, e: MouseEvent): void {

@@ -1,9 +1,9 @@
 <template>
-  <main class="px-4 py-10 text-center text-gray-700 dark:text-gray-200">
-    <div>Options</div>
-
-    <div class="mt-4">
-      Powered by Vite
-    </div>
+  <main class="min-h-screen bg-gray-50 px-6 py-8 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+    <Popup />
   </main>
 </template>
+
+<script setup lang="ts">
+import Popup from '~/popup/Popup.vue'
+</script>

@@ -3,43 +3,17 @@
 // 每次扩展启动跑一遍：遍历 storage.local 里 favorites-recovery.cache，
 // 删掉 cachedAt 距今 ≥ 30 天的条目，写回。
 //
-// 实现：直接用 webextension-polyfill 的 storage.local（不走 useWebExtensionStorage，
-// 后台没有 Vue 上下文，且这是 fire-and-forget 操作，不需要响应式）
+// 使用与内容端相同的缓存仓储与 TTL 规则，避免两个运行时对过期语义产生漂移。
 
-import type { CachedVideo } from '~/storages/favorites-recovery'
-import { storage as extStorage } from 'webextension-polyfill'
 import {
-  CACHE_TTL_MS
-
+  favoritesRecoveryStorage,
+  pruneExpiredCachedVideos
 } from '~/storages/favorites-recovery'
-
-const STORAGE_KEY = 'favorites-recovery.cache'
 
 export async function runFavoritesRecoveryCacheCleanup(): Promise<void> {
   try {
-    const stored = await extStorage.local.get(STORAGE_KEY) as Record<string, CachedVideo> | undefined
-    const cache = stored?.[STORAGE_KEY]
-    if (!cache || typeof cache !== 'object')
-      return
-
-    const now = Date.now()
-    const next: Record<string, CachedVideo> = {}
-    let removed = 0
-    for (const [bvid, entry] of Object.entries(cache)) {
-      if (!entry || typeof entry.cachedAt !== 'number') {
-        removed++
-        continue
-      }
-      if (now - entry.cachedAt >= CACHE_TTL_MS) {
-        removed++
-        continue
-      }
-      next[bvid] = entry
-    }
-
-    if (removed > 0) {
-      await extStorage.local.set({ [STORAGE_KEY]: next })
-    }
+    await favoritesRecoveryStorage.cache.ready
+    await favoritesRecoveryStorage.cache.update(cache => pruneExpiredCachedVideos(cache))
   }
   catch {
     // 静默清理失败

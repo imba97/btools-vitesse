@@ -1,10 +1,12 @@
-export function withComputed<T>(data: Ref<T>) {
+import type { StorageRepository } from '~/storages/repository'
+
+export function withComputed<T>(repository: StorageRepository<T>) {
   return computed<T>({
     get() {
-      return data.value
+      return repository.value.value
     },
     set(value) {
-      data.value = value
+      void repository.set(value)
     }
   })
 }

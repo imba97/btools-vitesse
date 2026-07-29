@@ -1,6 +1,4 @@
-import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
-
-const { useStorage } = useWebExtensionStorage('panel')
+import { createStorageRepository } from './repository'
 
 export const panelStorage = {
   /**
@@ -9,5 +7,5 @@ export const panelStorage = {
    * 用一个 Record 而不是每个面板一个 key —— 面板会越来越多，
    * 集中存一份避免 storage 里散落一堆 `panel.xxxCollapsed`
    */
-  collapsed: useStorage<Record<string, boolean>>('collapsed', {})
+  collapsed: createStorageRepository<Record<string, boolean>>('panel.collapsed', {})
 }

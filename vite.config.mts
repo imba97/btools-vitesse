@@ -82,11 +82,7 @@ export const sharedConfig: UserConfig = {
   optimizeDeps: {
     include: [
       'vue',
-      '@vueuse/core',
       'webextension-polyfill'
-    ],
-    exclude: [
-      'vue-demi'
     ]
   }
 }
@@ -118,13 +114,6 @@ export default defineConfig(({ command }) => ({
         options: r('src/options/index.html'),
         popup: r('src/popup/index.html')
       }
-    }
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    coverage: {
-      reportsDirectory: r('.coverage')
     }
   }
 }))

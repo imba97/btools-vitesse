@@ -1,9 +1,6 @@
-import { useWebExtensionStorage } from '~/composables/useWebExtensionStorage'
-
 import { PopupNavbarType } from '~/enums/popup'
-
-const { useStorage } = useWebExtensionStorage('system')
+import { createStorageRepository } from './repository'
 
 export const systemStorage = {
-  popupCurrentNavbar: useStorage<PopupNavbarType>('popupCurrentNavbar', PopupNavbarType.MultipleAccounts)
+  popupCurrentNavbar: createStorageRepository<PopupNavbarType>('system.popupCurrentNavbar', PopupNavbarType.MultipleAccounts)
 }

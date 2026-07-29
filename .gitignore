@@ -14,6 +14,7 @@ extension/manifest.json
 node_modules
 .eslintcache
 .coverage/
+src/coverage/
 
 # auto imports
 .auto-imports

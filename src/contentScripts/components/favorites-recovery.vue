@@ -6,6 +6,7 @@
 import type { VideoViewData } from '~/api/data/bilibili.data'
 import { buildSearchUrl } from '~/enums/popup'
 import { favoritesRecoveryStorage } from '~/storages/favorites-recovery'
+import { useContentPageRuntime } from '../runtime/page-runtime'
 import { getRecoveredVideo } from '../utils/favorites-cache'
 import {
   extractBvid,
@@ -19,10 +20,10 @@ import {
 const PROCESS_DEBOUNCE_MS = 120
 const MAX_REQUESTS_PER_TICK = 8
 
-const cleanupTasks: Array<() => void> = []
 const fetchCache = new Map<string, Promise<VideoViewData | null>>()
 let pendingTimer: number | undefined
 let disposed = false
+const pageRuntime = useContentPageRuntime()
 
 function markAttempted(card: Element): void {
   card.classList.add('btools-recovered')
@@ -175,10 +176,6 @@ function scheduleProcess(reason: string): void {
   }, PROCESS_DEBOUNCE_MS)
 }
 
-function onMutations(): void {
-  scheduleProcess('mutation')
-}
-
 // 在 biliplus 请求生命周期内，在卡片封面上显示 loading 遮罩
 // - 入口（recoverOne 开始时）调用 showRecoverOverlay → 加 overlay + spinner
 // - 完成（success patchCard / fail patchCardNotFound）调用 hideRecoverOverlay → 移除 overlay
@@ -251,8 +248,8 @@ function onDocClick(event: MouseEvent): void {
   if (!card)
     return
   const title = (card.dataset.btoolsTitle ?? '').trim()
-  const option = favoritesRecoveryStorage.clickSearchInvalid.value
-  const customTemplate = favoritesRecoveryStorage.clickSearchInvalidTemplate.value
+  const option = favoritesRecoveryStorage.clickSearchInvalid.value.value
+  const customTemplate = favoritesRecoveryStorage.clickSearchInvalidTemplate.value.value
   const url = buildSearchUrl(option, title, customTemplate)
   // Off / 模板为空 → url=null → 不拦截：用户没启用搜索就走 B 站默认跳转原 BV 页
   if (!url)
@@ -263,27 +260,21 @@ function onDocClick(event: MouseEvent): void {
 }
 
 onMounted(() => {
-  const observer = new MutationObserver(onMutations)
-  observer.observe(document.body, { childList: true, subtree: true })
-  cleanupTasks.push(() => observer.disconnect())
+  const stopDomSubscription = pageRuntime.onDomChanged(() => scheduleProcess('mutation'))
+  const stopUrlWatch = watch(pageRuntime.url, () => scheduleProcess('navigation'))
 
-  const onPopState = () => {
-    scheduleProcess('popstate')
-  }
-  window.addEventListener('popstate', onPopState)
-  cleanupTasks.push(() => window.removeEventListener('popstate', onPopState))
-
-  // 点击拦截——默认 Off 时 buildSearchUrl 返回 null，不阻止默认行为
   document.addEventListener('click', onDocClick, true)
-  cleanupTasks.push(() => document.removeEventListener('click', onDocClick, true))
+  onUnmounted(() => {
+    stopDomSubscription()
+    stopUrlWatch()
+    document.removeEventListener('click', onDocClick, true)
+  })
 
   scheduleProcess('initial')
 })
 
 onUnmounted(() => {
   disposed = true
-  while (cleanupTasks.length)
-    cleanupTasks.pop()?.()
   if (pendingTimer !== undefined) {
     window.clearTimeout(pendingTimer)
     pendingTimer = undefined

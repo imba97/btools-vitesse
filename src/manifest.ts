@@ -3,10 +3,13 @@ import type PkgType from '../package.json'
 import { readFile } from 'node:fs/promises'
 import { isDev, isFirefox, port, r } from '../scripts/utils'
 
-const bilibiliMatches = [
+const contentScriptMatches = [
   '*://*.bilibili.com/*',
-  '*://bilibili.com/*',
-  // 失效视频恢复：通过 biliplus 取真实视频信息（apiStorage 缓存）
+  '*://bilibili.com/*'
+]
+
+const hostPermissionMatches = [
+  ...contentScriptMatches,
   '*://*.biliplus.com/*'
 ]
 
@@ -53,21 +56,13 @@ export async function getManifest() {
       128: 'assets/logo.png'
     },
     permissions,
-    host_permissions: bilibiliMatches,
+    host_permissions: hostPermissionMatches,
     content_scripts: [
       {
-        matches: bilibiliMatches,
+        matches: contentScriptMatches,
         js: [
           'dist/contentScripts/index.global.js'
         ]
-      }
-    ],
-    web_accessible_resources: [
-      {
-        resources: [
-          'dist/contentScripts/*.css'
-        ],
-        matches: bilibiliMatches
       }
     ],
     content_security_policy: {

@@ -1,53 +1,40 @@
-// 把 cross-origin fetch（bilibili 之外，没有 CORS header 的目标）从 content script 挪到 background
-// background 受 host_permissions 授权，可以绕过 CORS 直接 fetch
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
+import type { BackgroundRequest, BackgroundResponse } from '~/protocol/background'
+import { BackgroundMessageType, isAllowedFetchUrl, isBackgroundRequest } from '~/protocol/background'
 
-interface FetchRequest {
-  type: 'btools:extra-fetch'
-  url: string
+export async function handleBackgroundRequest(
+  request: BackgroundRequest
+): Promise<BackgroundResponse<string | { at: number }>> {
+  if (request.type === BackgroundMessageType.ping) {
+    return { ok: true, value: { at: Date.now() } }
+  }
+
+  if (!isAllowedFetchUrl(request.url)) {
+    return { ok: false, error: 'The requested URL is not permitted.' }
+  }
+
+  try {
+    const response = await fetch(request.url, {
+      method: 'GET',
+      headers: { Accept: 'application/json, text/plain, */*' },
+      redirect: 'follow'
+    })
+    if (!response.ok) {
+      return { ok: false, error: `Request failed with status ${response.status}` }
+    }
+    return { ok: true, value: await response.text() }
+  }
+  catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : String(error) }
+  }
 }
 
-interface FetchResponse {
-  ok: boolean
-  status: number
-  body: string
-  error?: string
-}
-
-export function registerExtraFetch() {
-  const api = (browser as any)?.runtime
-  if (!api?.onMessage?.addListener)
-    return
-
-  api.onMessage.addListener((message: unknown, _sender: any, sendResponse: (resp: unknown) => void) => {
-    if (!message || typeof message !== 'object' || (message as any).type !== 'btools:extra-fetch')
-      return false
-
-    const url = (message as FetchRequest).url
-
-    void (async () => {
-      try {
-        const r = await fetch(url, {
-          method: 'GET',
-          headers: { 'User-Agent': UA, 'Accept': '*/*' },
-          redirect: 'follow'
-        })
-        const body = await r.text()
-        const resp: FetchResponse = { ok: r.ok, status: r.status, body }
-        sendResponse(resp)
-      }
-      catch (err) {
-        const resp: FetchResponse = {
-          ok: false,
-          status: 0,
-          body: '',
-          error: err instanceof Error ? err.message : String(err)
-        }
-        sendResponse(resp)
-      }
-    })()
-
-    // 表示会异步 sendResponse，保持 message channel 开启
-    return true
+export function registerBackgroundRequestHandler(): void {
+  browser.runtime.onMessage.addListener((message: unknown, sender: { id?: string }) => {
+    if (!isBackgroundRequest(message))
+      return undefined
+    if (sender.id && sender.id !== browser.runtime.id) {
+      return { ok: false, error: 'Only this extension may call this endpoint.' }
+    }
+    return handleBackgroundRequest(message)
   })
 }

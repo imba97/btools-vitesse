@@ -24,16 +24,11 @@ export interface UsePanelCollapseReturn {
 export function usePanelCollapse(key: string, defaultCollapsed = true): UsePanelCollapseReturn {
   const collapsed = computed<boolean>({
     get() {
-      const map = panelStorage.collapsed.value
+      const map = panelStorage.collapsed.value.value
       return key in map ? map[key] : defaultCollapsed
     },
     set(value) {
-      // 整体替换而不是原地改 —— useWebExtensionStorage 的 watch 虽然是 deep，
-      // 但换新对象语义更清晰，也避免序列化时读到中间态
-      panelStorage.collapsed.value = {
-        ...panelStorage.collapsed.value,
-        [key]: value
-      }
+      void panelStorage.collapsed.update(map => ({ ...map, [key]: value }))
     }
   })
 

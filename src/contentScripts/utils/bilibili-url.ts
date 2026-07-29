@@ -23,7 +23,10 @@ export function toHttps(url: string): string {
 /** 解析失败时返回 null —— `extractBvid` / `isVideoPage` 都需要先拿到 URL 再做判断 */
 function safeUrl(href: string): URL | null {
   try {
-    return new URL(href, location.href)
+    const baseUrl = typeof location === 'undefined'
+      ? 'https://www.bilibili.com/'
+      : location.href
+    return new URL(href, baseUrl)
   }
   catch {
     return null

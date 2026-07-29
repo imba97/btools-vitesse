@@ -10,8 +10,6 @@
   >
     <VideoToolbarBar
       :buttons="buttons"
-      :collapsed="collapsed"
-      @toggle="toggle"
     />
   </Teleport>
 </template>
@@ -20,7 +18,6 @@
 import type { ToolbarButton } from './video-toolbar/types'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useHostMount } from '~/composables/useHostMount'
-import { usePanelCollapse } from '~/composables/usePanelCollapse'
 import { useContentPageRuntime } from '../runtime/page-runtime'
 import { extractBvid, isVideoPage } from '../utils/bilibili-url'
 import { getVideoCover } from '../utils/video-cover'
@@ -31,7 +28,7 @@ import VideoToolbarBar from './video-toolbar/bar.vue'
 
   这里只做「装载 + 状态机」的工作：
   - 找到 #arc_toolbar_report，并把 body 中的扩展 host 定位在它上方；
-  - 维护 collapsed / coverUrl / status 等响应式状态；
+  - 维护 coverUrl / status 等响应式状态；
   - MO 兜底恢复 host 位置；
   - 用 <Teleport> 把 VideoToolbarBar 渲染到 host 里。
 
@@ -47,7 +44,6 @@ import VideoToolbarBar from './video-toolbar/bar.vue'
   - host 真被 B 站移除时，由 MO 监听到并 mountHost() 重建；这才是真正能动的 hook。
 */
 
-const PANEL_KEY = 'video-toolbar'
 const HOST_ID = 'btools-bar-host'
 // host 视觉：layout 一次性固定；theme 走 `dark:` variant 媒体查询（uno.config.ts dark: 'media'）
 const HOST_CLASS = 'btools-toolbar-host'
@@ -60,7 +56,6 @@ const { hostEl, mount: mountHost, unmount: unmountHost } = useHostMount(
 )
 
 // —— bar 数据 + 状态机 ——
-const { collapsed, toggle } = usePanelCollapse(PANEL_KEY, true)
 const bvid = ref<string | null>(null)
 const coverUrl = ref<string | null>(null)
 const status = ref<'idle' | 'loading' | 'ready' | 'error'>('idle')
@@ -129,15 +124,10 @@ function syncBvid(href = pageRuntime.url.value.href): void {
 
 watch(pageRuntime.url, url => syncBvid(url.href), { immediate: true })
 
-watch(
-  [collapsed, bvid],
-  () => {
-    if (!collapsed.value && bvid.value && status.value === 'idle') {
-      void loadCover()
-    }
-  },
-  { immediate: true }
-)
+watch(bvid, () => {
+  if (bvid.value && status.value === 'idle')
+    void loadCover()
+}, { immediate: true })
 
 onMounted(() => {
   mountHost()

@@ -2,63 +2,38 @@
   <div
     class="btools-toolbar"
   >
-    <div
-      class="btools-toolbar__items"
-      :class="itemsContainerClass"
-      :aria-hidden="collapsed"
+    <component
+      :is="b.href ? 'a' : 'button'"
+      v-for="b in buttons"
+      :key="b.key"
+      class="btools-toolbar__btn"
+      :class="[
+        isDisabled(b) ? 'opacity-35 pointer-events-none' : '',
+        cursorClass(b)
+      ]"
+      :href="b.href || undefined"
+      :target="b.href ? '_blank' : undefined"
+      :rel="b.href ? 'noopener noreferrer' : undefined"
+      :type="b.href ? undefined : 'button'"
+      :disabled="!b.href && isDisabled(b) ? true : undefined"
+      :tabindex="isDisabled(b) ? -1 : 0"
+      :title="b.title"
+      :aria-label="b.title"
+      :aria-disabled="isDisabled(b) ? 'true' : undefined"
+      @click="onItemClick(b, $event)"
     >
-      <component
-        :is="b.href ? 'a' : 'button'"
-        v-for="b in buttons"
-        :key="b.key"
-        class="btools-toolbar__btn"
-        :class="[
-          isDisabled(b) ? 'opacity-35 pointer-events-none' : '',
-          cursorClass(b)
-        ]"
-        :href="b.href || undefined"
-        :target="b.href ? '_blank' : undefined"
-        :rel="b.href ? 'noopener noreferrer' : undefined"
-        :type="b.href ? undefined : 'button'"
-        :disabled="!b.href && isDisabled(b) ? true : undefined"
-        :tabindex="(collapsed || isDisabled(b)) ? -1 : 0"
-        :title="b.title"
-        :aria-label="b.title"
-        :aria-disabled="isDisabled(b) ? 'true' : undefined"
-        @click="onItemClick(b, $event)"
-      >
-        <span :class="[iconClass(b), ICON_SPAN_CLASS]" />
-      </component>
-    </div>
-
-    <button
-      type="button"
-      class="btools-toolbar__btn btools-toolbar__toggle"
-      :aria-expanded="!collapsed"
-      :title="toggleTitle"
-      :aria-label="toggleTitle"
-      @click="onToggleClick"
-    >
-      <span :class="[collapsed ? CHEVRON_LEFT : CHEVRON_RIGHT, ICON_SPAN_CLASS]" />
-    </button>
+      <span :class="[iconClass(b), ICON_SPAN_CLASS]" />
+    </component>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { ToolbarButton } from './types'
-import { computed } from 'vue'
 
-const props = defineProps<{
+defineProps<{
   buttons: ToolbarButton[]
-  collapsed: boolean
 }>()
 
-const emit = defineEmits<{
-  toggle: []
-}>()
-
-const CHEVRON_LEFT = 'btools-toolbar__icon--chevron-left'
-const CHEVRON_RIGHT = 'btools-toolbar__icon--chevron-right'
 const ICON_SPAN_CLASS = 'btools-toolbar__icon'
 
 function iconClass(b: ToolbarButton): string {
@@ -84,22 +59,10 @@ function cursorClass(b: ToolbarButton): string {
   return 'cursor-pointer'
 }
 
-const itemsContainerClass = computed(() =>
-  props.collapsed
-    ? 'is-collapsed'
-    : ''
-)
-
 function onItemClick(b: ToolbarButton, e: MouseEvent): void {
   if (isDisabled(b)) {
     e.preventDefault()
   }
   b.onClick?.(e)
 }
-
-function onToggleClick(): void {
-  emit('toggle')
-}
-
-const toggleTitle = computed(() => (props.collapsed ? '展开 Btools 工具栏' : '收起 Btools 工具栏'))
 </script>

@@ -56,7 +56,7 @@ export async function getManifest() {
     },
     browser_specific_settings: {
       gecko: {
-        id: 'mail@imba97.cn',
+        id: '{979b898c-e2a9-4a83-bb42-d1573305b6da}',
         strict_min_version: '109.0'
       }
     },

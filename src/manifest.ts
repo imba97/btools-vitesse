@@ -42,14 +42,24 @@ export async function getManifest() {
       page: 'dist/options/index.html',
       open_in_tab: true
     },
-    background: isFirefox
-      ? {
-          scripts: ['dist/background/index.mjs'],
-          type: 'module'
-        }
-      : {
-          service_worker: 'dist/background/index.mjs'
-        },
+    background: {
+      // Chrome uses service_worker; Firefox (>=121) falls back to scripts.
+      // Firefox 109-120 has a bug where background fails to start when
+      // service_worker is present, so we strip it for Firefox builds.
+      // See https://mzl.la/4r6SF1L and Firefox bug 1860304.
+      ...(isFirefox
+        ? { scripts: ['dist/background/index.mjs'], type: 'module' as const }
+        : {
+            service_worker: 'dist/background/index.mjs',
+            scripts: ['dist/background/index.mjs']
+          })
+    },
+    browser_specific_settings: {
+      gecko: {
+        id: 'mail@imba97.cn',
+        strict_min_version: '109.0'
+      }
+    },
     icons: {
       16: 'assets/logo.png',
       48: 'assets/logo.png',

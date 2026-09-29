@@ -57,7 +57,13 @@ export async function getManifest() {
     browser_specific_settings: {
       gecko: {
         id: '{979b898c-e2a9-4a83-bb42-d1573305b6da}',
-        strict_min_version: '109.0'
+        strict_min_version: '109.0',
+        // 声明扩展是否收集/传输用户数据，供 AMO 审核用
+        // none = 不收集任何数据
+        // see https://mzl.la/firefox-builtin-data-consent
+        data_collection_permissions: {
+          required: ['none']
+        }
       }
     },
     icons: {
